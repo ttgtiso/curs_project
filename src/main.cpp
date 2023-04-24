@@ -1,74 +1,112 @@
 #include <wx/wx.h>
- 
+#include <wx/notebook.h>
+
+// Главный класс приложения.
 class MyApp : public wxApp
 {
 public:
-    bool OnInit() override;
+    virtual bool OnInit();
 };
- 
+
+//Определение точки входа в программу.
 wxIMPLEMENT_APP(MyApp);
- 
+
+// Опеределение фреймов приложения.
 class MyFrame : public wxFrame
 {
 public:
-    MyFrame();
- 
+    MyFrame(const wxString & title, const wxPoint &pos, const wxSize &size);
 private:
-    void OnHello(wxCommandEvent& event);
-    void OnExit(wxCommandEvent& event);
-    void OnAbout(wxCommandEvent& event);
-};
- 
-enum
+    void OnClick_first(wxCommandEvent&);
+    void OnClick_second(wxCommandEvent&);
+    wxDECLARE_EVENT_TABLE();
+}; 
+
+class MyFrame2 : public wxFrame 
 {
-    ID_Hello = 1
+public:
+    MyFrame2(const wxString & title, const wxPoint &pos, const wxSize &size);
+private:
+    void OnClick_first(wxCommandEvent& );
+    void OnClick_second(wxCommandEvent& );
+    wxDECLARE_EVENT_TABLE();
 };
- 
+
+
+// Перечисление id кнопок.
+enum ButtonId
+{
+    first_button_id = wxID_LAST + 1,
+    second_button_id,
+    first_button2_id,
+    second_button2_id
+};
+// clang-format off.
+wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
+    EVT_BUTTON(first_button_id, MyFrame::OnClick_first)
+    EVT_BUTTON(second_button_id, MyFrame::OnClick_second)
+wxEND_EVENT_TABLE()
+; // clang-forman on.
+
+wxBEGIN_EVENT_TABLE(MyFrame2, wxFrame)
+    EVT_BUTTON(first_button2_id, MyFrame2::OnClick_first)
+    EVT_BUTTON(second_button2_id, MyFrame2::OnClick_second)
+wxEND_EVENT_TABLE()
+;
+
+MyFrame *frame1 = nullptr;
+MyFrame2 *frame2 = nullptr;
+
 bool MyApp::OnInit()
 {
-    MyFrame *frame = new MyFrame();
-    frame->Show(true);
+    frame1 = new MyFrame("The 1 frame", wxDefaultPosition, wxDefaultSize);
+    frame1->Show(true);
+    frame2 = new MyFrame2("The 2 frame", wxDefaultPosition, wxDefaultSize);
     return true;
 }
- 
-MyFrame::MyFrame()
-    : wxFrame(nullptr, wxID_ANY, "Hello World")
+
+MyFrame::MyFrame(const wxString & title, const wxPoint &pos, const wxSize &size) : wxFrame(nullptr, wxID_ANY, title, pos, size)
 {
-    wxMenu *menuFile = new wxMenu;
-    menuFile->Append(ID_Hello, "&Hello...\tCtrl-H",
-                     "Help string shown in status bar for this menu item");
-    menuFile->AppendSeparator();
-    menuFile->Append(wxID_EXIT);
- 
-    wxMenu *menuHelp = new wxMenu;
-    menuHelp->Append(wxID_ABOUT);
- 
-    wxMenuBar *menuBar = new wxMenuBar;
-    menuBar->Append(menuFile, "&File");
-    menuBar->Append(menuHelp, "&Help");
- 
-    SetMenuBar( menuBar );
- 
-    CreateStatusBar();
-    SetStatusText("Welcome to wxWidgets!");
- 
-    Bind(wxEVT_MENU, &MyFrame::OnHello, this, ID_Hello);
-    Bind(wxEVT_MENU, &MyFrame::OnAbout, this, wxID_ABOUT);
-    Bind(wxEVT_MENU, &MyFrame::OnExit, this, wxID_EXIT);
+    wxButton *button = new wxButton(this, first_button_id, "button1");
+    wxButton *button2 = new wxButton(this, second_button_id, "button2");
+    wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
+
+    sizer->Add(button, 100);
+    sizer->Add(button2, 100);
+
+    this->SetSizerAndFit(sizer);
 }
- 
-void MyFrame::OnExit(wxCommandEvent& event)
+
+void MyFrame::OnClick_first(wxCommandEvent &event)
 {
-    Close(true);
+    std::cout << "The 1 frame." << std::endl;
 }
- 
-void MyFrame::OnAbout(wxCommandEvent& event)
+
+void MyFrame::OnClick_second(wxCommandEvent &event)
 {
-    wxMessageBox("This is a wxWidgets Hello World example",
-                 "About Hello World", wxOK | wxICON_INFORMATION);
+    frame1->Show(false);
+    frame2->Show(true);
 }
- 
-void MyFrame::OnHello(wxCommandEvent& event)
+
+MyFrame2::MyFrame2(const wxString & title, const wxPoint &pos, const wxSize &size) : wxFrame(nullptr, wxID_ANY, title, pos, size)
 {
-    wxLogMessage("Hello world from wxWidgets!");
+    wxButton *button = new wxButton(this, first_button2_id, "button1");
+    wxButton *button2 = new wxButton(this, second_button2_id, "button2");
+    wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
+
+    sizer->Add(button, 100);
+    sizer->Add(button2, 100);
+
+    this->SetSizerAndFit(sizer);
+}
+
+void MyFrame2::OnClick_first(wxCommandEvent& event)
+{
+    std::cout << "This 2 framw" << std::endl;
+}
+
+void MyFrame2::OnClick_second(wxCommandEvent& event)
+{
+    frame2->Show(false);
+    frame1->Show(true);
 }
