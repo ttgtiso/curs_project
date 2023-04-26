@@ -7,8 +7,10 @@ if(wxWidgets_USE_FILE) # not defined in CONFIG mode
 endif()
 
 file(GLOB project_GLOB
+    include/*
     src/*
 )
 add_executable(Curs_project ${project_GLOB})
 target_link_libraries(Curs_project ${wxWidgets_LIBRARIES})
-target_include_directories(Curs_project PRIVATE ${wxWidgets_INCLUDE_DIRS})
+target_include_directories(Curs_project PRIVATE ${wxWidgets_INCLUDE_DIRS}
+                            include/)

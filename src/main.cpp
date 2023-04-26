@@ -1,38 +1,9 @@
-#include <wx/wx.h>
-#include <wx/notebook.h>
-
-// Главный класс приложения.
-class MyApp : public wxApp
-{
-public:
-    virtual bool OnInit();
-};
+#include <main.h>
 
 //Определение точки входа в программу.
 wxIMPLEMENT_APP(MyApp);
 
-// Опеределение фреймов приложения.
-class MyFrame : public wxFrame
-{
-public:
-    MyFrame(const wxString & title, const wxPoint &pos, const wxSize &size);
-private:
-    void OnClick_first(wxCommandEvent&);
-    void OnClick_second(wxCommandEvent&);
-    wxDECLARE_EVENT_TABLE();
-}; 
-
-class MyFrame2 : public wxFrame 
-{
-public:
-    MyFrame2(const wxString & title, const wxPoint &pos, const wxSize &size);
-private:
-    void OnClick_first(wxCommandEvent& );
-    void OnClick_second(wxCommandEvent& );
-    wxDECLARE_EVENT_TABLE();
-};
-
-
+/*
 // Перечисление id кнопок.
 enum ButtonId
 {
@@ -47,66 +18,88 @@ wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_BUTTON(second_button_id, MyFrame::OnClick_second)
 wxEND_EVENT_TABLE()
 ; // clang-forman on.
-
-wxBEGIN_EVENT_TABLE(MyFrame2, wxFrame)
-    EVT_BUTTON(first_button2_id, MyFrame2::OnClick_first)
-    EVT_BUTTON(second_button2_id, MyFrame2::OnClick_second)
-wxEND_EVENT_TABLE()
-;
-
-MyFrame *frame1 = nullptr;
-MyFrame2 *frame2 = nullptr;
+*/
 
 bool MyApp::OnInit()
 {
-    frame1 = new MyFrame("The 1 frame", wxDefaultPosition, wxDefaultSize);
+    MyFrame1 *frame1 = new MyFrame1(nullptr, wxID_ANY, wxT("Автоваз, почти."), wxDefaultPosition, wxSize(700, 600), wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL);
     frame1->Show(true);
-    frame2 = new MyFrame2("The 2 frame", wxDefaultPosition, wxDefaultSize);
     return true;
 }
-
-MyFrame::MyFrame(const wxString & title, const wxPoint &pos, const wxSize &size) : wxFrame(nullptr, wxID_ANY, title, pos, size)
+MyFrame1::MyFrame1( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxFrame( parent, id, title, pos, size, style )
 {
-    wxButton *button = new wxButton(this, first_button_id, "button1");
-    wxButton *button2 = new wxButton(this, second_button_id, "button2");
-    wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
+	this->SetSizeHints( wxSize( 400,400 ), wxDefaultSize );
 
-    sizer->Add(button, 100);
-    sizer->Add(button2, 100);
+	wxBoxSizer* bSizer1;
+	bSizer1 = new wxBoxSizer( wxVERTICAL );
 
-    this->SetSizerAndFit(sizer);
+	m_scrolledWindow1 = new wxScrolledWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxVSCROLL );
+	m_scrolledWindow1->SetScrollRate( 5, 5 );
+	wxBoxSizer* bSizer4;
+	bSizer4 = new wxBoxSizer( wxVERTICAL );
+
+	m_simplebook2 = new wxSimplebook( m_scrolledWindow1, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
+	m_panel2 = new wxPanel( m_simplebook2, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	wxBoxSizer* bSizer5;
+	bSizer5 = new wxBoxSizer( wxHORIZONTAL );
+
+	m_staticText1 = new wxStaticText( m_panel2, wxID_ANY, wxT("MyLabel"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText1->Wrap( -1 );
+	bSizer5->Add( m_staticText1, 0, wxALL, 5 );
+
+
+	bSizer5->Add( 0, 0, 1, wxEXPAND, 5 );
+
+	wxStaticBoxSizer* sbSizer2;
+	sbSizer2 = new wxStaticBoxSizer( new wxStaticBox( m_panel2, wxID_ANY, wxT("Покупатель") ), wxVERTICAL );
+
+	m_staticText3 = new wxStaticText( sbSizer2->GetStaticBox(), wxID_ANY, wxT("Аунтифицируйтесь в системе"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText3->Wrap( -1 );
+	sbSizer2->Add( m_staticText3, 0, wxALL, 5 );
+
+	m_button17 = new wxButton( sbSizer2->GetStaticBox(), wxID_ANY, wxT("Войти"), wxDefaultPosition, wxDefaultSize, 0 );
+	sbSizer2->Add( m_button17, 0, wxALL|wxEXPAND, 5 );
+
+	m_staticText4 = new wxStaticText( sbSizer2->GetStaticBox(), wxID_ANY, wxT("Нет аккаунта?"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText4->Wrap( -1 );
+	sbSizer2->Add( m_staticText4, 0, wxALL, 5 );
+
+	m_button18 = new wxButton( sbSizer2->GetStaticBox(), wxID_ANY, wxT("Зарегестрироваться"), wxDefaultPosition, wxDefaultSize, 0 );
+	sbSizer2->Add( m_button18, 0, wxALL|wxEXPAND, 5 );
+
+
+	bSizer5->Add( sbSizer2, 0, 0, 5 );
+
+
+	m_panel2->SetSizer( bSizer5 );
+	m_panel2->Layout();
+	bSizer5->Fit( m_panel2 );
+	m_simplebook2->AddPage( m_panel2, wxT("a page"), false );
+	m_panel3 = new wxPanel( m_simplebook2, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	m_simplebook2->AddPage( m_panel3, wxT("a page"), false );
+
+	bSizer4->Add( m_simplebook2, 1, wxEXPAND | wxALL, 5 );
+
+
+	m_scrolledWindow1->SetSizer( bSizer4 );
+	m_scrolledWindow1->Layout();
+	bSizer4->Fit( m_scrolledWindow1 );
+	bSizer1->Add( m_scrolledWindow1, 1, wxEXPAND | wxALL, 5 );
+
+
+	this->SetSizer( bSizer1 );
+	this->Layout();
+
+	this->Centre( wxBOTH );
+
+	// Connect Events
+	m_button17->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame1::OnLogin ), NULL, this );
 }
 
-void MyFrame::OnClick_first(wxCommandEvent &event)
+MyFrame1::~MyFrame1()
 {
-    std::cout << "The 1 frame." << std::endl;
+	// Disconnect Events
+	m_button17->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame1::OnLogin ), NULL, this );
+
 }
 
-void MyFrame::OnClick_second(wxCommandEvent &event)
-{
-    frame1->Show(false);
-    frame2->Show(true);
-}
-
-MyFrame2::MyFrame2(const wxString & title, const wxPoint &pos, const wxSize &size) : wxFrame(nullptr, wxID_ANY, title, pos, size)
-{
-    wxButton *button = new wxButton(this, first_button2_id, "button1");
-    wxButton *button2 = new wxButton(this, second_button2_id, "button2");
-    wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
-
-    sizer->Add(button, 100);
-    sizer->Add(button2, 100);
-
-    this->SetSizerAndFit(sizer);
-}
-
-void MyFrame2::OnClick_first(wxCommandEvent& event)
-{
-    std::cout << "This 2 framw" << std::endl;
-}
-
-void MyFrame2::OnClick_second(wxCommandEvent& event)
-{
-    frame2->Show(false);
-    frame1->Show(true);
-}
