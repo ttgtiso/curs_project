@@ -19,6 +19,7 @@
 #include <wx/simplebook.h>
 #include <wx/scrolwin.h>
 #include <wx/frame.h>
+#include <mariadb/conncpp.hpp>
 
 class MyApp : public wxApp
 {
@@ -29,7 +30,7 @@ public:
 class MyFrame1 : public wxFrame
 {
 	private:
-
+		
 	protected:
 		wxScrolledWindow* m_scrolledWindow1;
 		wxSimplebook* m_simplebook2;
@@ -42,7 +43,7 @@ class MyFrame1 : public wxFrame
 		wxPanel* m_panel3;
 
 		// Virtual event handlers, override them in your derived class
-		virtual void OnLogin( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnLogin( wxCommandEvent& event );
 
 
 	public:
