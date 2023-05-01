@@ -106,57 +106,26 @@ MyFrame1::~MyFrame1()
 void MyFrame1::OnLogin(wxCommandEvent& event)
 {
 	std::cout << "Pressed button login" << std::endl;
-	/*
-	// Instantiate Driver
-	sql::Driver* driver = sql::mariadb::get_driver_instance();
 
-	// Configure Connection
-	sql::SQLString url("jdbc:mariadb://localhost:3306/todo");
-	sql::Properties properties({{"user", "app_user"}, {"password", "Password123!"}});
+	try{
+	sql::mysql::MySQL_Driver *driver;
+	sql::Connection *con;
+	sql::Statement *stmt;
 
-	// Establish Connection
-	std::unique_ptr<sql::Connection> conn(driver->connect(url, properties));
+	driver = sql::mysql::get_mysql_driver_instance();
+	con = driver->connect("localhost:3306", "app_user", "Password123!");
 
-	// Create a new PreparedStatement
-	std::unique_ptr<sql::PreparedStatement> stmnt(conn->prepareStatement("insert into tasks (description) values (?)"));
-
-	// Bind values to SQL statement
-	stmnt->setString(1, description);
-
-	// Execute query
-	stmnt->executeQuery();
-
-	// Create a new Statement
-	std::unique_ptr stmnt(conn->createStatement());
-
-	// Execute query
-	sql::ResultSet *res = stmnt->executeQuery("select * from tasks");
-
-	// Loop through and print results
-	while (res->next()) {
-		std::cout << "id = " << res->getInt(1);
-		std::cout << ", description = " << res->getString(2);
-		std::cout << ", completed = " << res->getBoolean(3) << "\n";
+	stmt = con->createStatement();
+	stmt->execute("USE test");
+	stmt->execute("DROP TABLE IF EXISTS test");
+	stmt->execute("CREATE TABLE test(id INT, label CHAR(1))");
+	stmt->execute("INSERT INTO test(id, label) VALUES (1, 'a')");
+	
+	delete stmt;
+	delete con;
+	} 
+	catch(sql::SQLException &e)
+	{
+		std::cout << e.what();
 	}
-
-	// Create a new PreparedStatement
-	std::unique_ptr stmnt(conn->prepareStatement("update tasks set completed = ? where id = ?"));
-
-	// Bind values to SQL statement
-	stmnt->setBoolean(1, completed);
-	stmnt->setInt(2, id);
-
-	// Execute query
-	stmnt->executeQuery();
-
-	// Create a new PreparedStatement
-	std::unique_ptr stmnt(conn->prepareStatement("delete from tasks where id = ?"));
-
-	// Bind values to SQL statement
-	stmnt->setInt(1, id);
-
-	// Execute query
-	stmnt->executeQuery();
-	*/
-
 }

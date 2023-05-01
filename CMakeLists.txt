@@ -12,12 +12,16 @@ if (UNIX)
 	    src/*
 	)
 
-	file (GLOB project_LIB_MYSQL
-	    lib/linux/mariadb/*)
-
+	#file (GLOB project_LIB_MYSQL 
+	#    lib/linux/mariadb/*) - забыть как страшный сон
+	set(CXX_FLAGS "-lmysql"
+					"-lmysqlcppconn"
+					"-lmysqlclient-r")
 	add_executable(Curs_project ${project_GLOB})
+	target_compile_options(Curs_project PRIVATE ${CXX_FLAGS})
 	target_link_libraries(Curs_project ${wxWidgets_LIBRARIES}
-					                   ${project_LIB_MYSQL})
+										${MYSQL_LIB_DIR}
+										"/usr/lib/x86_64-linux-gnu/libmysqlcppconn.so")
 	target_include_directories(Curs_project PRIVATE ${wxWidgets_INCLUDE_DIRS}
 	                                                include/)
 endif (UNIX)

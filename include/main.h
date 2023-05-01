@@ -19,7 +19,12 @@
 #include <wx/simplebook.h>
 #include <wx/scrolwin.h>
 #include <wx/frame.h>
-#include <mariadb/conncpp.hpp>
+#include <mysql_driver.h>
+#include <mysql_connection.h>
+#include <cppconn/driver.h>
+#include <cppconn/connection.h>
+#include <cppconn/statement.h>
+#include <cppconn/exception.h>
 
 class MyApp : public wxApp
 {
