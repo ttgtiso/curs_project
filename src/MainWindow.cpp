@@ -2,9 +2,9 @@
 
 enum Panel_id
 {
-	Home_panel_id,
-	Login_panel_id,
-	Reg_panel_id
+	Home_page_id,
+	Login_page_id,
+	Reg_page_id
 };
 
 /*
@@ -26,12 +26,22 @@ wxEND_EVENT_TABLE()
 
 MyFrame1::MyFrame1(const wxString &title, const wxPoint &pos, const wxSize &size) : wxFrame(nullptr, wxID_ANY, title, pos, size)
 {
+	// Установка минимального размера окна
+	this->SetSizeHints( wxSize( 400,400 ), wxDefaultSize );
 	SimpleBookMain = new wxSimplebook(this);
 	HomePage = new HomePagePanel(SimpleBookMain, wxDefaultPosition, wxDefaultSize);
 	HomePage->LoginButton->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::OnLogin), NULL, this);
 	HomePage->RegButton->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::OnReged), NULL, this);
 
+	LoginPage = new LoginPagePanel(SimpleBookMain, wxDefaultPosition, wxDefaultSize);
+	LoginPage->LoginingButton->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::Back_main_window), NULL, this);
+
+	RegPage = new RegPagePanel(SimpleBookMain, wxDefaultPosition, wxDefaultSize);
+	RegPage->LoginingButton->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::Back_main_window), NULL, this);
+
 	SimpleBookMain->AddPage(HomePage, wxT("HomePage"));
+	SimpleBookMain->AddPage(LoginPage, wxT("LoginPage"));
+	SimpleBookMain->AddPage(RegPage, wxT("RegPage"));
 
 }
 
@@ -41,12 +51,14 @@ MyFrame1::~MyFrame1()
 	// Отключение событий
 	HomePage->LoginButton->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame1::OnLogin ), NULL, this );
 	HomePage->RegButton->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame1::OnReged ), NULL, this );
+	LoginPage->LoginingButton->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::Back_main_window), NULL, this);
+	RegPage->LoginingButton->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::Back_main_window), NULL, this);
 }
 
 void MyFrame1::OnLogin(wxCommandEvent& event)
 {
 	std::cout << "Pressed button login" << std::endl;
-	//SimpleBookMain->ChangeSelection(Login_panel_id);
+	SimpleBookMain->ChangeSelection(Login_page_id);
 	/*
 	try{
 	sql::mysql::MySQL_Driver *driver;
@@ -75,11 +87,11 @@ void MyFrame1::OnLogin(wxCommandEvent& event)
 void MyFrame1::OnReged(wxCommandEvent& event)
 {
 	std::cout << "Presed button Reged" << std::endl;
-	//SimpleBook_main->ChangeSelection(Reg_panel_id);
+	SimpleBookMain->ChangeSelection(Reg_page_id);
 }
 
 void MyFrame1::Back_main_window(wxCommandEvent& event)
 {
 	std::cout << "Back to main window" << std::endl;
-	//SimpleBook_main->ChangeSelection(Home_panel_id);
+	SimpleBookMain->ChangeSelection(Home_page_id);
 }

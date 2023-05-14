@@ -19,8 +19,6 @@ protected:
 	wxStaticText* LoginLabel;
 	wxStaticText* RegLabel;
 
-	/***************|    События приложения   |*********************/
-
 public:
 	wxButton* LoginButton;
 	wxButton* RegButton;

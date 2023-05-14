@@ -1,6 +1,6 @@
 #include <main.h>
-#include <HomePage.h>
 #include <MainWindow.h>
+
 //Определение точки входа в программу.
 wxIMPLEMENT_APP(MyApp);
 
