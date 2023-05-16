@@ -21,7 +21,7 @@ RegPagePanel::RegPagePanel(wxWindow *parent, const wxPoint &pos, const wxSize &s
     PasswordEdit = new wxTextCtrl(LoginPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
     ConfirmPasswordLabel = new wxStaticText(LoginPanel, wxID_ANY, wxT("Повторите пароль"));
     ConfirmPasswordEdit = new wxTextCtrl(LoginPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
-    LoginingButton = new wxButton(LoginPanel, wxID_ANY, wxT("Войти"));
+    LoginingButton = new wxButton(LoginPanel, wxID_ANY, wxT("Зарегестрироваться"));
 
     LoginPanelSizer->Add(UserNameLabel, 0, wxCENTER); 
     LoginPanelSizer->Add(UserNameEdit, 0, wxEXPAND | wxALL, 10);

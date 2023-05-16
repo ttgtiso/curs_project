@@ -1,10 +1,38 @@
 #include <HomePage.h>
 
+ShopElement::ShopElement(wxWindow *parent, const wxPoint &pos, const wxSize &size) : wxPanel(parent, wxID_ANY, pos, size)
+{
+	// Создание "Центра управления картинкой"
+	mainBoxSizer = new wxBoxSizer(wxVERTICAL);
+	//PanelImage = new wxAnimationCtrl(this, wxID_ANY, wxNullAnimation, wxDefaultPosition, wxDefaultSize, wxAC_DEFAULT_STYLE);
+	originalImage = new wxImage(wxT("image/src/test.jpg"));
+	//PanelImage->SetInactiveBitmap();
+
+	ImagePanel = new wxPanel(this, wxID_ANY);
+	ImageBoxSizer = new wxBoxSizer(wxVERTICAL);
+	StaticBitmap = new wxStaticBitmap(ImagePanel, wxID_ANY, wxNullBitmap);
+	
+	ImageBoxSizer->Add(StaticBitmap, 1, wxEXPAND | wxALL);
+	ImagePanel->SetSizerAndFit(ImageBoxSizer);
+
+	//Добавление остальных элементов
+	LabelImageName = new wxStaticText(this, wxID_ANY, wxT("Автомагазин"));
+	LabelImagePrice = new wxStaticText(this, wxID_ANY, wxT("2 000 000 руб"));
+	ViewButton = new wxButton(this, wxID_ANY, wxT("Посмотреть"));
+
+	mainBoxSizer->Add(ImagePanel, 1, wxEXPAND | wxALL);
+	mainBoxSizer->Add(LabelImageName, 0, wxEXPAND | wxALL);
+	mainBoxSizer->Add(LabelImagePrice, 0 , wxALIGN_RIGHT);
+	mainBoxSizer->Add(ViewButton, 0, wxEXPAND | wxALL);
+
+	image = new wxImage();
+
+	this->SetSizerAndFit(mainBoxSizer);
+
+}
+
 HomePagePanel::HomePagePanel(wxWindow *parent, const wxPoint &pos, const wxSize &size) : wxPanel(parent, wxID_ANY, pos, size)
 {
-    DownPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(200, 100));
-	DownPanel->SetBackgroundColour(wxColor(100, 100, 200));
-
 	// Логин панель и её элементы
 	LoginPanel = new wxStaticBox(this, wxID_ANY, wxT("Current User"), wxDefaultPosition, wxSize(200, 100));
 	LoginPanelSizer = new wxStaticBoxSizer(LoginPanel, wxVERTICAL);
@@ -23,13 +51,13 @@ HomePagePanel::HomePagePanel(wxWindow *parent, const wxPoint &pos, const wxSize 
 	UpPanelSizer = new wxBoxSizer(wxHORIZONTAL);
 
 	// Пустой элемент для управлением BoxSizer
-
 	UpPanelSizer->Add(0, 0, 1, wxEXPAND, 5);
 	UpPanelSizer->Add(LoginPanelSizer);
 
 	// Нижняя часть приложения
 	DownPanelSizer = new wxBoxSizer(wxVERTICAL);
-	DownPanelSizer->Add(DownPanel, 1, wxEXPAND | wxALL);
+	ShopPanel1 = new ShopElement(this, wxDefaultPosition, wxDefaultSize);
+	DownPanelSizer->Add(ShopPanel1, 1, wxEXPAND | wxALL);
 
 	// Главный Sizer приложения
 	MainPanelSizer = new wxBoxSizer(wxVERTICAL);
@@ -37,4 +65,23 @@ HomePagePanel::HomePagePanel(wxWindow *parent, const wxPoint &pos, const wxSize 
 	MainPanelSizer->Add(DownPanelSizer, 1, wxEXPAND | wxALL, 5);
 
 	this->SetSizerAndFit(MainPanelSizer);
+}
+
+void ShopElement::updateImage()
+{
+	if (image->IsOk())
+	{
+		delete bitmapImage;
+		delete image;
+		image = new wxImage(originalImage->Scale(ImageBoxSizer->GetSize().x, ImageBoxSizer->GetSize().y));
+		bitmapImage = new wxBitmap(*image);
+		StaticBitmap->SetBitmap(*bitmapImage);
+		std::cout << "Sizer size x,y: " << ImageBoxSizer->GetSize().x << " " << ImageBoxSizer->GetSize().y << std::endl;
+	}
+	else
+	{
+		image = new wxImage(originalImage->Scale(480, 346));
+		bitmapImage = new wxBitmap(*image);
+		StaticBitmap->SetBitmap(*bitmapImage);
+	}
 }

@@ -1,4 +1,10 @@
-build/
+build/CMakeFiles*
+build/*.ninja*
+build/*.json
+build/*.cmake
+build/Curs_project
+build/Makefile
+build/*.txt
 bin/*
 .vscode/
 test/

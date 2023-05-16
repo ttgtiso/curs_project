@@ -20,6 +20,15 @@ class MyFrame1 : public wxFrame
 		virtual void OnLogin( wxCommandEvent& event );
 		virtual void OnReged( wxCommandEvent& event );
 		virtual void Back_main_window( wxCommandEvent& event ); 
+		virtual void ViewContent( wxCommandEvent& event );
+		virtual void OnSize(wxSizeEvent& event);
+
+		/***************|    События приложения   |*********************/
+		sql::mysql::MySQL_Driver *driver;
+		sql::Connection *con;
+		sql::Statement *stmt; // Данный тип поддерживает только простые SQL запросы
+		sql::PreparedStatement *prep_stmt;
+		sql::ResultSet *res;
 
 
 	public:
@@ -27,4 +36,5 @@ class MyFrame1 : public wxFrame
 		~MyFrame1();
 
 };
+
 #endif
