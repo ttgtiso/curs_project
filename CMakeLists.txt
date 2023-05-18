@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.18.4)
-project(Curs_project VERSION 0.1.0)
+project(Curs_project VERSION 0.2.4)
 
 if (UNIX)
 	find_package(wxWidgets REQUIRED COMPONENTS net core base)

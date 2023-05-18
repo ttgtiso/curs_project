@@ -31,7 +31,6 @@ MyFrame1::MyFrame1(const wxString &title, const wxPoint &pos, const wxSize &size
 	con = driver->connect("localhost:3306", "app_user", "Password123!");
 	stmt = con->createStatement();
 	stmt->execute("USE autoshop");
-	delete stmt;
 
 	// Установка минимального размера окна
 	this->SetSizeHints( wxSize( 400,400 ), wxDefaultSize );
@@ -39,7 +38,12 @@ MyFrame1::MyFrame1(const wxString &title, const wxPoint &pos, const wxSize &size
 	HomePage = new HomePagePanel(SimpleBookMain, wxDefaultPosition, wxDefaultSize);
 	HomePage->LoginButton->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::OnLogin), NULL, this);
 	HomePage->RegButton->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::OnReged), NULL, this);
-	HomePage->ShopPanel1->ViewButton->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::ViewContent), NULL, this);
+	//HomePage->ShopPanel1->ViewButton->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::ViewContent), NULL, this);
+
+	res = stmt->executeQuery("SELECT * from product");
+	HomePage->Init(res, 5);
+	delete res;
+	delete stmt;
 
 	LoginPage = new LoginPagePanel(SimpleBookMain, wxDefaultPosition, wxDefaultSize);
 	LoginPage->LoginingButton->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::Back_main_window), NULL, this);
@@ -51,9 +55,6 @@ MyFrame1::MyFrame1(const wxString &title, const wxPoint &pos, const wxSize &size
 	SimpleBookMain->AddPage(HomePage, wxT("HomePage"));
 	SimpleBookMain->AddPage(LoginPage, wxT("LoginPage"));
 	SimpleBookMain->AddPage(RegPage, wxT("RegPage"));
-
-	Bind(wxEVT_SIZE, &MyFrame1::OnSize, this);
-
 }
 
 MyFrame1::~MyFrame1()
@@ -63,7 +64,7 @@ MyFrame1::~MyFrame1()
 	HomePage->RegButton->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame1::OnReged ), NULL, this );
 	LoginPage->LoginingButton->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::Back_main_window), NULL, this);
 	RegPage->LoginingButton->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::Back_main_window), NULL, this);
-	HomePage->ShopPanel1->ViewButton->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::ViewContent), NULL, this);
+	//HomePage->ShopPanel1->ViewButton->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::ViewContent), NULL, this);
 	delete con;
 }
 
@@ -129,18 +130,19 @@ void MyFrame1::Back_main_window(wxCommandEvent& event)
 	SimpleBookMain->ChangeSelection(Home_page_id);
 }
 
+
 void MyFrame1::ViewContent( wxCommandEvent& event)
 {
 	std::cout << "Pressed ViewButton" << std::endl;
-	HomePage->ShopPanel1->updateImage();
+	//HomePage->ShopPanel1->updateImage();
 }
 
 void MyFrame1::OnSize(wxSizeEvent& event)
 {
-	if (this->IsShownOnScreen())
+	std::cout << "Wait" << std::endl;
+	for (int i=0; i < HomePage->ShopElements.size(); i++)
 	{
-		std::cout << "Wait" << std::endl;
-		HomePage->ShopPanel1->updateImage();
-		event.Skip();
+		HomePage->ShopElements.at(i)->updateImage(wxSize(20, 20));
 	}
+	event.Skip();
 }

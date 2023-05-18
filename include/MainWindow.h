@@ -21,7 +21,7 @@ class MyFrame1 : public wxFrame
 		virtual void OnReged( wxCommandEvent& event );
 		virtual void Back_main_window( wxCommandEvent& event ); 
 		virtual void ViewContent( wxCommandEvent& event );
-		virtual void OnSize(wxSizeEvent& event);
+		
 
 		/***************|    События приложения   |*********************/
 		sql::mysql::MySQL_Driver *driver;
@@ -32,6 +32,7 @@ class MyFrame1 : public wxFrame
 
 
 	public:
+		virtual void OnSize(wxSizeEvent& event);
 		MyFrame1(const wxString &title, const wxPoint &pos, const wxSize &size);
 		~MyFrame1();
 

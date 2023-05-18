@@ -5,7 +5,7 @@ ShopElement::ShopElement(wxWindow *parent, const wxPoint &pos, const wxSize &siz
 	// Создание "Центра управления картинкой"
 	mainBoxSizer = new wxBoxSizer(wxVERTICAL);
 	//PanelImage = new wxAnimationCtrl(this, wxID_ANY, wxNullAnimation, wxDefaultPosition, wxDefaultSize, wxAC_DEFAULT_STYLE);
-	originalImage = new wxImage(wxT("image/src/test.jpg"));
+	originalImage = new wxImage();
 	//PanelImage->SetInactiveBitmap();
 
 	ImagePanel = new wxPanel(this, wxID_ANY);
@@ -29,6 +29,21 @@ ShopElement::ShopElement(wxWindow *parent, const wxPoint &pos, const wxSize &siz
 
 	this->SetSizerAndFit(mainBoxSizer);
 
+}
+
+void ShopElement::updateData(int id, std::string artiul, std::string model,
+							std::string provider, int price, int warranty,
+							int count, std::string PathToImage)
+{
+	wxString p1 = PathToImage;
+	wxString p2 = model;
+	wxString p3 = std::to_string(price);
+	originalImage->LoadFile(p1);
+	LabelImageName->SetLabelText(p2);
+	LabelImagePrice->SetLabelText(p3);
+	image = new wxImage(originalImage->Scale(480, 346));
+	bitmapImage = new wxBitmap(*image);
+	StaticBitmap->SetBitmap(*bitmapImage);
 }
 
 HomePagePanel::HomePagePanel(wxWindow *parent, const wxPoint &pos, const wxSize &size) : wxPanel(parent, wxID_ANY, pos, size)
@@ -56,8 +71,9 @@ HomePagePanel::HomePagePanel(wxWindow *parent, const wxPoint &pos, const wxSize 
 
 	// Нижняя часть приложения
 	DownPanelSizer = new wxBoxSizer(wxVERTICAL);
-	ShopPanel1 = new ShopElement(this, wxDefaultPosition, wxDefaultSize);
-	DownPanelSizer->Add(ShopPanel1, 1, wxEXPAND | wxALL);
+	
+	//ShopPanel1 = new ShopElement(this, wxDefaultPosition, wxDefaultSize);
+	//DownPanelSizer->Add(ShopPanel1, 1, wxEXPAND | wxALL);
 
 	// Главный Sizer приложения
 	MainPanelSizer = new wxBoxSizer(wxVERTICAL);
@@ -67,7 +83,7 @@ HomePagePanel::HomePagePanel(wxWindow *parent, const wxPoint &pos, const wxSize 
 	this->SetSizerAndFit(MainPanelSizer);
 }
 
-void ShopElement::updateImage()
+void ShopElement::updateImage(wxSize size_image)
 {
 	if (image->IsOk())
 	{
@@ -76,12 +92,58 @@ void ShopElement::updateImage()
 		image = new wxImage(originalImage->Scale(ImageBoxSizer->GetSize().x, ImageBoxSizer->GetSize().y));
 		bitmapImage = new wxBitmap(*image);
 		StaticBitmap->SetBitmap(*bitmapImage);
-		std::cout << "Sizer size x,y: " << ImageBoxSizer->GetSize().x << " " << ImageBoxSizer->GetSize().y << std::endl;
 	}
-	else
+}
+
+// Принимает на вход таблицу "товары" а также количество колонок на одну строку.
+void HomePagePanel::Init(sql::ResultSet* res, float col_columns)
+{
+	int row = 1;
+	int columns = 1;
+	res->last();
+	// Функция ceil округляет в сторону большего значения.
+	int col_rows = ceil(res->getInt(1)/col_columns);
+	ShopPanels.reserve(col_rows);
+	res->first();
+	ShopPanels.push_back(new wxBoxSizer(wxHORIZONTAL));
+	DownPanelSizer->Add(ShopPanels.at(0), 1, wxEXPAND | wxALL);
+	ShopElements.push_back(new ShopElement(this, wxDefaultPosition, wxDefaultSize));
+	ShopElements.at(columns-1)->updateData(res->getInt(1), res->getString(2), res->getString(3),
+											res->getString(4), res->getInt(5), res->getInt(6),
+											res->getInt(7), res->getString(8));
+	ShopPanels.at(row-1)->Add(ShopElements.at(columns-1), 1, wxEXPAND | wxALL);
+	ShopElements.at(columns-1)->updateImage(wxSize(250, 250));
+	columns++;
+	try
 	{
-		image = new wxImage(originalImage->Scale(480, 346));
-		bitmapImage = new wxBitmap(*image);
-		StaticBitmap->SetBitmap(*bitmapImage);
+		while (res->next())
+		{
+			if (columns > col_columns * row)
+			{
+				row += 1;
+				ShopPanels.push_back(new wxBoxSizer(wxHORIZONTAL));
+				DownPanelSizer->Add(ShopPanels.at(row-1), 1, wxEXPAND | wxALL);
+			}
+			ShopElements.push_back(new ShopElement(this, wxDefaultPosition, wxDefaultSize));
+			ShopElements.at(columns-1)->updateData(res->getInt(1), res->getString(2), res->getString(3),
+											res->getString(4), res->getInt(5), res->getInt(6),
+											res->getInt(7), res->getString(8));
+			ShopPanels.at(row-1)->Add(ShopElements.at(columns-1), 1, wxEXPAND | wxALL);
+			ShopElements.at(columns-1)->updateImage(wxSize(250, 250));
+			columns++;
+			std::cout << "| --------------------------------------- |" << std::endl;
+			std::cout << "Id: " << res->getInt(1) << std::endl;
+			std::cout << "Articul: " << res->getString(2) << std::endl; 
+			std::cout << "Model: " << res->getString(3) << std::endl;
+			std::cout << "Provider: " << res->getString(4) << std::endl;
+			std::cout << "Price: " << res->getInt(5) << std::endl;
+			std::cout << "Warranty: " << res->getInt(6) << std::endl; 
+			std::cout << "Count: " << res->getInt(7) << std::endl;
+			std::cout << "PathToImage: " << res->getString(8) << std::endl;
+		}
+	}
+	catch(sql::SQLException &e)
+	{
+		std::cout << e.what() << std::endl;
 	}
 }
