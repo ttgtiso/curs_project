@@ -14,16 +14,24 @@ class ShopElement : public wxPanel
 		wxPanel* ImagePanel;
 		wxStaticBitmap* StaticBitmap;
 		wxImage* originalImage;
-		
+
 	public:
 		wxButton* ViewButton;
 		wxBitmap* bitmapImage;
 		wxImage* image;
 		ShopElement(wxWindow *parent, const wxPoint &pos, const wxSize &size);
-		void updateImage(wxSize size_image);
+		void updateImage();
 		void updateData(int id, std::string artiul, std::string model,
 						std::string provider, int price, int warranty,
 						int count, std::string PathToImage);
+		wxString id;
+		wxString articul;
+		wxString model;
+		wxString provider;
+		wxString price;
+		wxString warranty;
+		wxString count;
+		wxString PathToImage;
 		//~ShopElement();
 };
 
@@ -52,6 +60,7 @@ public:
 	wxButton* RegButton;
     HomePagePanel(wxWindow *parent, const wxPoint &pos, const wxSize &size);
 	void Init(sql::ResultSet* res, float col_columns);
+	void UpdateImage();
 };
 
 #endif

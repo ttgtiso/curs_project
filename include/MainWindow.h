@@ -4,6 +4,7 @@
 #include <HomePage.h>
 #include <LoginPage.h>
 #include <RegPage.h>
+#include <ShopPage.h>
 
 class MyFrame1 : public wxFrame
 {
@@ -15,12 +16,14 @@ class MyFrame1 : public wxFrame
 		HomePagePanel* HomePage;
 		LoginPagePanel* LoginPage;
 		RegPagePanel* RegPage;
+		ShopPagePanel* ShopPage;
 
 		/***************|    События приложения   |*********************/
 		virtual void OnLogin( wxCommandEvent& event );
 		virtual void OnReged( wxCommandEvent& event );
 		virtual void Back_main_window( wxCommandEvent& event ); 
 		virtual void ViewContent( wxCommandEvent& event );
+		void ConnectEventButtonsShopPage();
 		
 
 		/***************|    События приложения   |*********************/

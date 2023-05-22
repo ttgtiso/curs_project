@@ -12,8 +12,6 @@ if (UNIX)
 	    src/*
 	)
 
-	#file (GLOB project_LIB_MYSQL 
-	#    lib/linux/mariadb/*) - забыть как страшный сон
 	set(CXX_FLAGS "-lmysql"
 					"-lmysqlcppconn"
 					"-lmysqlclient-r")

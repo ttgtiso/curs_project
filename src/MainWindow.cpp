@@ -4,7 +4,8 @@ enum Panel_id
 {
 	Home_page_id,
 	Login_page_id,
-	Reg_page_id
+	Reg_page_id,
+	Shop_page_id
 };
 
 /*
@@ -51,10 +52,18 @@ MyFrame1::MyFrame1(const wxString &title, const wxPoint &pos, const wxSize &size
 	RegPage = new RegPagePanel(SimpleBookMain, wxDefaultPosition, wxDefaultSize);
 	RegPage->LoginingButton->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::Back_main_window), NULL, this);
 
+	ShopPage = new ShopPagePanel(SimpleBookMain, wxDefaultPosition, wxDefaultSize);
+	ShopPage->backButton->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::Back_main_window), NULL, this);
 
 	SimpleBookMain->AddPage(HomePage, wxT("HomePage"));
 	SimpleBookMain->AddPage(LoginPage, wxT("LoginPage"));
 	SimpleBookMain->AddPage(RegPage, wxT("RegPage"));
+	SimpleBookMain->AddPage(ShopPage, wxT("Shop Page"));
+
+	ConnectEventButtonsShopPage();
+
+	Layout();
+	HomePage->UpdateImage();
 }
 
 MyFrame1::~MyFrame1()
@@ -64,6 +73,7 @@ MyFrame1::~MyFrame1()
 	HomePage->RegButton->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame1::OnReged ), NULL, this );
 	LoginPage->LoginingButton->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::Back_main_window), NULL, this);
 	RegPage->LoginingButton->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::Back_main_window), NULL, this);
+	ShopPage->backButton->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::Back_main_window), NULL, this);
 	//HomePage->ShopPanel1->ViewButton->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::ViewContent), NULL, this);
 	delete con;
 }
@@ -131,18 +141,34 @@ void MyFrame1::Back_main_window(wxCommandEvent& event)
 }
 
 
-void MyFrame1::ViewContent( wxCommandEvent& event)
+void MyFrame1::ViewContent(wxCommandEvent& event)
 {
 	std::cout << "Pressed ViewButton" << std::endl;
-	//HomePage->ShopPanel1->updateImage();
+	for (auto Element : HomePage->ShopElements)
+	{
+		if (Element->ViewButton->GetId() == event.GetId())
+		{
+
+			std::cout << event.GetId() << std::endl;
+			std::cout << "Button found!" << std::endl;
+			ShopPage->UpdateData(Element);
+			break;
+		}
+	}
+	SimpleBookMain->ChangeSelection(Shop_page_id);
+	ShopPage->UpdateImage();
 }
 
 void MyFrame1::OnSize(wxSizeEvent& event)
 {
-	std::cout << "Wait" << std::endl;
+	HomePage->UpdateImage();
+	event.Skip();
+}
+
+void MyFrame1::ConnectEventButtonsShopPage()
+{
 	for (int i=0; i < HomePage->ShopElements.size(); i++)
 	{
-		HomePage->ShopElements.at(i)->updateImage(wxSize(20, 20));
+		HomePage->ShopElements.at(i)->ViewButton->Connect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::ViewContent), NULL, this);
 	}
-	event.Skip();
 }

@@ -35,12 +35,17 @@ void ShopElement::updateData(int id, std::string artiul, std::string model,
 							std::string provider, int price, int warranty,
 							int count, std::string PathToImage)
 {
-	wxString p1 = PathToImage;
-	wxString p2 = model;
-	wxString p3 = std::to_string(price);
-	originalImage->LoadFile(p1);
-	LabelImageName->SetLabelText(p2);
-	LabelImagePrice->SetLabelText(p3);
+	this->id = std::to_string(id);
+	this->articul = artiul;
+	this->model = model;
+	this->provider = provider;
+	this->price = std::to_string(price);
+	this->warranty = std::to_string(warranty);
+	this->count = std::to_string(count);
+	this->PathToImage = PathToImage;
+	originalImage->LoadFile(this->PathToImage);
+	LabelImageName->SetLabelText(this->model);
+	LabelImagePrice->SetLabelText(this->price);
 	image = new wxImage(originalImage->Scale(480, 346));
 	bitmapImage = new wxBitmap(*image);
 	StaticBitmap->SetBitmap(*bitmapImage);
@@ -83,7 +88,7 @@ HomePagePanel::HomePagePanel(wxWindow *parent, const wxPoint &pos, const wxSize 
 	this->SetSizerAndFit(MainPanelSizer);
 }
 
-void ShopElement::updateImage(wxSize size_image)
+void ShopElement::updateImage()
 {
 	if (image->IsOk())
 	{
@@ -112,7 +117,7 @@ void HomePagePanel::Init(sql::ResultSet* res, float col_columns)
 											res->getString(4), res->getInt(5), res->getInt(6),
 											res->getInt(7), res->getString(8));
 	ShopPanels.at(row-1)->Add(ShopElements.at(columns-1), 1, wxEXPAND | wxALL);
-	ShopElements.at(columns-1)->updateImage(wxSize(250, 250));
+	ShopElements.at(columns-1)->updateImage();
 	columns++;
 	try
 	{
@@ -129,7 +134,7 @@ void HomePagePanel::Init(sql::ResultSet* res, float col_columns)
 											res->getString(4), res->getInt(5), res->getInt(6),
 											res->getInt(7), res->getString(8));
 			ShopPanels.at(row-1)->Add(ShopElements.at(columns-1), 1, wxEXPAND | wxALL);
-			ShopElements.at(columns-1)->updateImage(wxSize(250, 250));
+			ShopElements.at(columns-1)->updateImage();
 			columns++;
 			std::cout << "| --------------------------------------- |" << std::endl;
 			std::cout << "Id: " << res->getInt(1) << std::endl;
@@ -145,5 +150,14 @@ void HomePagePanel::Init(sql::ResultSet* res, float col_columns)
 	catch(sql::SQLException &e)
 	{
 		std::cout << e.what() << std::endl;
+	}
+}
+
+void HomePagePanel::UpdateImage()
+{
+	std::cout << "Update Image Size" << std::endl;
+	for (int i=0; i < ShopElements.size(); i++)
+	{
+		ShopElements.at(i)->updateImage();
 	}
 }
