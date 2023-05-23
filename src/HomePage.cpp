@@ -56,6 +56,7 @@ HomePagePanel::HomePagePanel(wxWindow *parent, const wxPoint &pos, const wxSize 
 	// Логин панель и её элементы
 	LoginPanel = new wxStaticBox(this, wxID_ANY, wxT("Current User"), wxDefaultPosition, wxSize(200, 100));
 	LoginPanelSizer = new wxStaticBoxSizer(LoginPanel, wxVERTICAL);
+	BasketButton = new wxBitmapButton(this, wxID_ANY, wxBitmap("image/app/basket.png"));
 
 	LoginLabel = new wxStaticText(LoginPanel, wxID_ANY, wxT("Аунтифицируйтесь в системе"));
 	LoginButton = new wxButton(LoginPanel, wxID_ANY, wxT("Войти"));
@@ -72,6 +73,7 @@ HomePagePanel::HomePagePanel(wxWindow *parent, const wxPoint &pos, const wxSize 
 
 	// Пустой элемент для управлением BoxSizer
 	UpPanelSizer->Add(0, 0, 1, wxEXPAND, 5);
+	UpPanelSizer->Add(BasketButton, 0, wxALL, 5);
 	UpPanelSizer->Add(LoginPanelSizer);
 
 	// Нижняя часть приложения

@@ -23,6 +23,7 @@ class MyFrame1 : public wxFrame
 		virtual void OnReged( wxCommandEvent& event );
 		virtual void Back_main_window( wxCommandEvent& event ); 
 		virtual void ViewContent( wxCommandEvent& event );
+		virtual void ViewBack( wxCommandEvent& event );
 		void ConnectEventButtonsShopPage();
 		
 

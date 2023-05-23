@@ -8,23 +8,6 @@ enum Panel_id
 	Shop_page_id
 };
 
-/*
-// Перечисление id кнопок.
-enum ButtonId
-{
-    first_button_id = wxID_LAST + 1,
-    second_button_id,
-    first_button2_id,
-    second_button2_id
-};
-// clang-format off.
-wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
-    EVT_BUTTON(first_button_id, MyFrame::OnClick_first)
-    EVT_BUTTON(second_button_id, MyFrame::OnClick_second)
-wxEND_EVENT_TABLE()
-; // clang-forman on.
-*/
-
 MyFrame1::MyFrame1(const wxString &title, const wxPoint &pos, const wxSize &size) : wxFrame(nullptr, wxID_ANY, title, pos, size)
 {
 	// Настройка драйвера MySQL
@@ -53,7 +36,7 @@ MyFrame1::MyFrame1(const wxString &title, const wxPoint &pos, const wxSize &size
 	RegPage->LoginingButton->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::Back_main_window), NULL, this);
 
 	ShopPage = new ShopPagePanel(SimpleBookMain, wxDefaultPosition, wxDefaultSize);
-	ShopPage->backButton->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::Back_main_window), NULL, this);
+	ShopPage->backButton->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::ViewBack), NULL, this);
 
 	SimpleBookMain->AddPage(HomePage, wxT("HomePage"));
 	SimpleBookMain->AddPage(LoginPage, wxT("LoginPage"));
@@ -73,7 +56,7 @@ MyFrame1::~MyFrame1()
 	HomePage->RegButton->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame1::OnReged ), NULL, this );
 	LoginPage->LoginingButton->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::Back_main_window), NULL, this);
 	RegPage->LoginingButton->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::Back_main_window), NULL, this);
-	ShopPage->backButton->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::Back_main_window), NULL, this);
+	ShopPage->backButton->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::ViewBack), NULL, this);
 	//HomePage->ShopPanel1->ViewButton->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::ViewContent), NULL, this);
 	delete con;
 }
@@ -103,7 +86,6 @@ void MyFrame1::OnLogin(wxCommandEvent& event)
 	{
 		std::cout << e.what() << std::endl;
 	}
-	
 }
 
 void MyFrame1::OnReged(wxCommandEvent& event)
@@ -140,6 +122,15 @@ void MyFrame1::Back_main_window(wxCommandEvent& event)
 	SimpleBookMain->ChangeSelection(Home_page_id);
 }
 
+void MyFrame1::ViewBack(wxCommandEvent& event)
+{
+	std::cout << "Back to main window as ShopPage" << std::endl;
+	SimpleBookMain->ChangeSelection(Home_page_id);
+	// Данная функция определяет, будет ли ошибка при масштабирование изображения
+	// на форме покупок.
+	ShopPage->UpdateImage(wxSize(10,10));
+	HomePage->UpdateImage();
+}
 
 void MyFrame1::ViewContent(wxCommandEvent& event)
 {
@@ -161,7 +152,15 @@ void MyFrame1::ViewContent(wxCommandEvent& event)
 
 void MyFrame1::OnSize(wxSizeEvent& event)
 {
-	HomePage->UpdateImage();
+	if (HomePage->IsShown())
+	{
+		HomePage->UpdateImage();
+	}
+	if (ShopPage->IsShown())
+	{
+		std::cout << "Update ShopImage" << std::endl;
+		ShopPage->UpdateImage();
+	}
 	event.Skip();
 }
 

@@ -25,15 +25,16 @@ ShopPagePanel::ShopPagePanel(wxWindow *parent, const wxPoint &pos, const wxSize 
     
     aboutLabel = new wxStaticText(this, wxID_ANY, wxT(""));
     originalImage = new wxImage();
+    currentImage = new wxImage();
     bitmapImage = new wxBitmap();
 
-    labelSizer->Add(idLabel);
-    labelSizer->Add(articulLabel);
-    labelSizer->Add(modelLabel);
-    labelSizer->Add(providerLabel);
-    labelSizer->Add(priceLabel);
-    labelSizer->Add(warrantyLabel);
-    labelSizer->Add(countLabel);
+    labelSizer->Add(idLabel, 1, wxEXPAND);
+    labelSizer->Add(articulLabel, 1, wxEXPAND);
+    labelSizer->Add(modelLabel, 1, wxEXPAND);
+    labelSizer->Add(providerLabel, 1, wxEXPAND);
+    labelSizer->Add(priceLabel, 1, wxEXPAND);
+    labelSizer->Add(warrantyLabel, 1, wxEXPAND);
+    labelSizer->Add(countLabel, 1, wxEXPAND);
     labelPanel->SetSizer(labelSizer);
 
     upRightSizer->Add(labelPanel, 1, wxEXPAND);
@@ -42,8 +43,8 @@ ShopPagePanel::ShopPagePanel(wxWindow *parent, const wxPoint &pos, const wxSize 
     imageSizer->Add(image, 1, wxEXPAND | wxALL);
     imagePanel->SetSizer(imageSizer);
 
-    upSizer->Add(imagePanel, 1, wxEXPAND);
-    upSizer->Add(upRightSizer, 1, wxEXPAND);
+    upSizer->Add(imagePanel, 1, wxEXPAND | wxALL);
+    upSizer->Add(upRightSizer, 1, wxEXPAND | wxALL);
 
     mainSizer->Add(backButton, 0, wxALL);
     mainSizer->Add(upSizer, 1, wxEXPAND | wxALL);
@@ -58,20 +59,27 @@ void ShopPagePanel::UpdateData(ShopElement *Element)
     originalImage = new wxImage(Element->PathToImage);
     idLabel->SetLabelText(wxT("ID товара: " + Element->id));
     articulLabel->SetLabelText(wxT("Артикул: " + Element->articul));
-    modelLabel->SetLabelText(wxT("Модель" + Element->model));
+    modelLabel->SetLabelText(wxT("Модель: " + Element->model));
     providerLabel->SetLabelText(wxT("Производитель: " + Element->provider));
     priceLabel->SetLabelText(wxT("Цена: " + Element->price));
     warrantyLabel->SetLabelText(wxT("Гарантия: " + Element->warranty));
     countLabel->SetLabelText(wxT("Количество: " + Element->count));
-    
 }
 
 void ShopPagePanel::UpdateImage()
 {
     delete bitmapImage;
 	delete currentImage;
-	currentImage = new wxImage(originalImage->Scale(imagePanel->GetSize().x, imagePanel->GetSize().y));
+	currentImage = new wxImage(originalImage->Scale(labelPanel->GetSize().x, labelPanel->GetSize().y));
 	bitmapImage = new wxBitmap(*currentImage);
 	image->SetBitmap(*bitmapImage);
-    
+}
+
+void ShopPagePanel::UpdateImage(wxSize size)
+{
+    delete bitmapImage;
+    delete currentImage;
+    currentImage = new wxImage(originalImage->Scale(size.x, size.y));
+    bitmapImage = new wxBitmap(*currentImage);
+    image->SetBitmap(*bitmapImage);
 }

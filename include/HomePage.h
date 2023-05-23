@@ -45,6 +45,7 @@ protected:
 	wxBoxSizer* MainPanelSizer;
 	wxBoxSizer* UpPanelSizer;
 	wxBoxSizer* DownPanelSizer;
+	wxBitmapButton* BasketButton;
 	
 	// Элементы окна регистрации
 	wxStaticBox* LoginPanel;

@@ -12,7 +12,6 @@ protected:
     wxBoxSizer* mainSizer;
     wxBoxSizer* upSizer;
     wxBoxSizer* upRightSizer;
-    wxStaticBitmap* image;
     wxPanel* imagePanel;
     wxBoxSizer* imageSizer;
     wxImage* currentImage;
@@ -32,9 +31,11 @@ protected:
 public:
     wxButton* buyButton;
     wxButton* backButton;
+    wxStaticBitmap* image;
     ShopPagePanel(wxWindow *parent, const wxPoint &pos, const wxSize &size);
     void UpdateData(ShopElement *Element);
     void UpdateImage();
+    void UpdateImage(wxSize size);
 };
 
 #endif
