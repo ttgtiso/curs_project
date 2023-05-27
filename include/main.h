@@ -23,6 +23,7 @@
 #include <wx/frame.h>
 #include <wx/animate.h>
 #include <wx/vector.h>
+#include <wx/grid.h>
 //Подключение конектора MySQL C++
 #include <mysql_driver.h>
 #include <mysql_connection.h>

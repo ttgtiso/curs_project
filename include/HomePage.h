@@ -48,13 +48,14 @@ protected:
 	wxBitmapButton* BasketButton;
 	
 	// Элементы окна регистрации
-	wxStaticBox* LoginPanel;
+	
 	wxStaticBoxSizer* LoginPanelSizer;
 	wxStaticText* LoginLabel;
 	wxStaticText* RegLabel;
 
 public:
 	//Элементы для нижнией панели
+	wxStaticBox* LoginPanel;
 	wxVector <wxBoxSizer*> ShopPanels;
 	wxVector <ShopElement*> ShopElements;
 	wxButton* LoginButton;

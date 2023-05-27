@@ -2,10 +2,12 @@
 
 LoginPagePanel::LoginPagePanel(wxWindow *parent, const wxPoint &pos, const wxSize &size) : wxPanel(parent, wxID_ANY, pos, size)
 {
+    mainSizer = new wxBoxSizer(wxVERTICAL);
     // Главный sizer
     LoginBoxSizerHorizontal = new wxBoxSizer(wxHORIZONTAL);
     LoginBoxSizerVertical = new wxBoxSizer(wxVERTICAL);
 
+    backButton = new wxButton(this, wxID_ANY, wxT("Вернуться"));
     // Элементы StaticBox
     LoginPanel = new wxStaticBox(this, wxID_ANY, wxT("Аунтификация"), wxDefaultPosition, wxSize(200, 200));
     LoginPanelSizer = new wxStaticBoxSizer(LoginPanel, wxVERTICAL);
@@ -25,5 +27,7 @@ LoginPagePanel::LoginPagePanel(wxWindow *parent, const wxPoint &pos, const wxSiz
     LoginBoxSizerVertical->Add(LoginPanelSizer, 1, wxCENTER | wxALL);
     LoginBoxSizerHorizontal->Add(LoginBoxSizerVertical, 1, wxCENTER | wxALL);
 
-    this->SetSizerAndFit(LoginBoxSizerHorizontal);
+    mainSizer->Add(backButton, 0, wxALL, 5);
+    mainSizer->Add(LoginBoxSizerHorizontal, 1, wxEXPAND);
+    this->SetSizerAndFit(mainSizer);
 }

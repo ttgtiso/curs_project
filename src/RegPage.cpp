@@ -3,9 +3,11 @@
 RegPagePanel::RegPagePanel(wxWindow *parent, const wxPoint &pos, const wxSize &size) : wxPanel(parent, wxID_ANY, pos, size)
 {
     // Главный sizer
+    mainSizer = new wxBoxSizer(wxVERTICAL);
     LoginBoxSizerHorizontal = new wxBoxSizer(wxHORIZONTAL);
     LoginBoxSizerVertical = new wxBoxSizer(wxVERTICAL);
 
+    backButton = new wxButton(this, wxID_ANY, wxT("Назад"));
     // Элементы StaticBox
     LoginPanel = new wxStaticBox(this, wxID_ANY, wxT("Аунтификация"), wxDefaultPosition, wxSize(200, 400));
     LoginPanelSizer = new wxStaticBoxSizer(LoginPanel, wxVERTICAL);
@@ -38,6 +40,10 @@ RegPagePanel::RegPagePanel(wxWindow *parent, const wxPoint &pos, const wxSize &s
 
     LoginBoxSizerVertical->Add(LoginPanelSizer, 1, wxCENTER | wxALL);
     LoginBoxSizerHorizontal->Add(LoginBoxSizerVertical, 1, wxCENTER | wxALL);
+    
+    mainSizer->Add(backButton, 0, wxALL, 5);
+    mainSizer->Add(LoginBoxSizerHorizontal, 1, wxEXPAND);
 
-    this->SetSizerAndFit(LoginBoxSizerHorizontal);
+
+    this->SetSizerAndFit(mainSizer);
 }

@@ -57,6 +57,7 @@ HomePagePanel::HomePagePanel(wxWindow *parent, const wxPoint &pos, const wxSize 
 	LoginPanel = new wxStaticBox(this, wxID_ANY, wxT("Current User"), wxDefaultPosition, wxSize(200, 100));
 	LoginPanelSizer = new wxStaticBoxSizer(LoginPanel, wxVERTICAL);
 	BasketButton = new wxBitmapButton(this, wxID_ANY, wxBitmap("image/app/basket.png"));
+	BasketButton->SetHelpText(wxT("Зарегестрируйтесь что бы получить доступ к этому разделу."));
 
 	LoginLabel = new wxStaticText(LoginPanel, wxID_ANY, wxT("Аунтифицируйтесь в системе"));
 	LoginButton = new wxButton(LoginPanel, wxID_ANY, wxT("Войти"));
