@@ -7,7 +7,9 @@ enum Panel_id
 	Reg_page_id,
 	Shop_page_id,
 	Root_page_id,
-	Root_page_view_id
+	Root_page_view_id,
+	Root_page_add_product_id,
+	Root_page_add_user_id
 };
 
 MyFrame1::MyFrame1(const wxString &title, const wxPoint &pos, const wxSize &size) : wxFrame(nullptr, wxID_ANY, title, pos, size)
@@ -44,9 +46,21 @@ MyFrame1::MyFrame1(const wxString &title, const wxPoint &pos, const wxSize &size
 	RootPage = new RootPagePanel(SimpleBookMain, wxDefaultPosition, wxDefaultSize);
 	RootPage->reloginButton->Connect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::Relogin), NULL, this);
 	RootPage->showTable->Connect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::ShowTable), NULL, this);
+	RootPage->addProduct->Connect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::ShowAddProduct), NULL, this);
+	RootPage->addUser->Connect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::ShowAddUser), NULL, this);
 
 	RootPageView = new RootPageViewColumn(SimpleBookMain, wxDefaultPosition, wxDefaultSize);
 	RootPageView->backButton->Connect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::BackRoot), NULL, this);
+	RootPageView->removeButton->Connect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::RemoveElement), NULL, this);
+
+	RootPageAddPro = new RootPageAddProduct(SimpleBookMain, wxDefaultPosition, wxDefaultSize);
+	RootPageAddPro->backButton->Connect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::BackRoot), NULL, this);
+	RootPageAddPro->addButton->Connect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::AddProduct), NULL, this);
+	RootPageAddPro->imagePicker->Bind(wxEVT_COMMAND_FILEPICKER_CHANGED, &MyFrame1::PictureImage, this);
+
+	RootPageAddUsr = new RootPageAddUser(SimpleBookMain, wxDefaultPosition, wxDefaultSize);
+	RootPageAddUsr->backButton->Connect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::BackRoot), NULL, this);
+	RootPageAddUsr->addButton->Connect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::AddUser), NULL, this);
 
 	SimpleBookMain->AddPage(HomePage, wxT("Home Page"));
 	SimpleBookMain->AddPage(LoginPage, wxT("Login Page"));
@@ -54,6 +68,8 @@ MyFrame1::MyFrame1(const wxString &title, const wxPoint &pos, const wxSize &size
 	SimpleBookMain->AddPage(ShopPage, wxT("Shop Page"));
 	SimpleBookMain->AddPage(RootPage, wxT("Root page"));
 	SimpleBookMain->AddPage(RootPageView, wxT("Root page view"));
+	SimpleBookMain->AddPage(RootPageAddPro, wxT("Root page add product"));
+	SimpleBookMain->AddPage(RootPageAddUsr, wxT("Root page add user"));
 
 	ConnectEventButtonsShopPage();
 }
@@ -61,8 +77,8 @@ MyFrame1::MyFrame1(const wxString &title, const wxPoint &pos, const wxSize &size
 MyFrame1::~MyFrame1()
 {
 	// Отключение событий
-	HomePage->LoginButton->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame1::ShownLoginPage ), NULL, this );
-	HomePage->RegButton->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame1::ShownRegedPage ), NULL, this );
+	HomePage->LoginButton->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame1::ShownLoginPage ), NULL, this);
+	HomePage->RegButton->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame1::ShownRegedPage ), NULL, this);
 	LoginPage->LoginingButton->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::OnLogin), NULL, this);
 	LoginPage->backButton->Disconnect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::Back_main_window), NULL, this);
 	RegPage->LoginingButton->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::OnReged), NULL, this);
@@ -70,7 +86,14 @@ MyFrame1::~MyFrame1()
 	ShopPage->backButton->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::ViewBack), NULL, this);
 	RootPage->reloginButton->Disconnect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::Relogin), NULL, this);
 	RootPage->showTable->Disconnect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::ShowTable), NULL, this);
+	RootPage->addProduct->Disconnect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::ShowAddProduct), NULL, this);
+	RootPage->addUser->Disconnect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::ShowAddUser), NULL, this);
 	RootPageView->backButton->Disconnect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::BackRoot), NULL, this);
+	RootPageView->removeButton->Disconnect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::RemoveElement), NULL, this);
+	RootPageAddPro->backButton->Disconnect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::BackRoot), NULL, this);
+	RootPageAddPro->addButton->Disconnect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::AddProduct), NULL, this);
+	RootPageAddUsr->backButton->Disconnect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::BackRoot), NULL, this);
+	RootPageAddUsr->addButton->Disconnect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::AddUser), NULL, this);
 	// Удаление подключения
 	delete con;
 }
@@ -79,64 +102,12 @@ void MyFrame1::ShownLoginPage(wxCommandEvent& event)
 {
 	std::cout << "Pressed button login" << std::endl;
 	SimpleBookMain->ChangeSelection(Login_page_id);
-	/*
-	try{
-		std::cout << "Выполнение подключения к базе данных..." << std::endl;
-		stmt = con->createStatement();
-		prep_stmt = con->prepareStatement("INSERT INTO product VALUES (?, ?, ?, ?, ?, ?, ?)");
-		prep_stmt->setInt(1, 3);
-		prep_stmt->setString(2, "A2");
-		prep_stmt->setString(3, "App car");
-		prep_stmt->setString(4, "wxWidgets");
-		prep_stmt->setInt(5, 8800);
-		prep_stmt->setInt(6, 0);
-		prep_stmt->setInt(7, 10);
-		prep_stmt->execute();
-		std::cout << "Выполнение запроса завершено" << std::endl;
-		delete stmt;
-		delete prep_stmt;
-	} 
-	catch(sql::SQLException &e)
-	{
-		std::cout << e.what() << std::endl;
-	}
-	*/
 }
 
 void MyFrame1::ShownRegedPage(wxCommandEvent& event)
 {
 	std::cout << "Presed button Reged" << std::endl;
 	SimpleBookMain->ChangeSelection(Reg_page_id);
-	/*
-	try
-	{
-		stmt = con->createStatement();
-		res = stmt->executeQuery("SELECT * from product");
-		while (res->next())
-		{
-			std::cout << "| --------------------------------------- |" << std::endl;
-			std::cout << "Id: " << res->getInt(1) << std::endl;
-			std::cout << "Articul: " << res->getString(2) << std::endl; 
-			std::cout << "Model: " << res->getString(3) << std::endl;
-			std::cout << "Provider: " << res->getString(4) << std::endl;
-			std::cout << "Price: " << res->getInt(5) << std::endl;
-			std::cout << "Warranty: " << res->getInt(6) << std::endl; 
-			std::cout << "Count: " << res->getInt(7) << std::endl;
-		}
-		delete res;
-		res = stmt->executeQuery("SHOW tables");
-		while (res->next())
-		{
-			std::cout << res->getString(1) << std::endl;
-		}
-		delete stmt;
-		delete res;
-	}
-	catch(sql::SQLException &e)
-	{
-		std::cout << e.what() << std::endl;
-	}
-	*/
 }
 
 void MyFrame1::Back_main_window(wxCommandEvent& event)
@@ -226,6 +197,8 @@ void MyFrame1::OnLogin(wxCommandEvent& event)
 	}
 	while (res->next())
 	{
+		login = res->getString(1);
+		password = res->getString(2);
 		if ( LoginPage->LoginEdit->GetValue() == login)
 		{
 			if (LoginPage->PasswordEdit->GetValue() == password)
@@ -234,7 +207,6 @@ void MyFrame1::OnLogin(wxCommandEvent& event)
 				userPrivilege = res->getInt(3);
 				userLogining = true;
 				SetUser();
-				break;
 			}
 		}
 	}
@@ -291,13 +263,103 @@ void MyFrame1::BackRoot(wxCommandEvent& event)
 
 void MyFrame1::ShowTable(wxCommandEvent& event)
 {
-	std::string nameTable;
-	nameTable = RootPage->listTables->GetStringSelection();
+	if (RootPage->listTables->GetStringSelection() == wxT(""))
+	{
+		std::cout << "Выберете таблицу для просмотра" << std::endl;
+		return ;
+	}
+	currentTable = RootPage->listTables->GetStringSelection();
 	stmt = con->createStatement();
-	res = stmt->executeQuery("SELECT * from " + nameTable);
+	res = stmt->executeQuery("SELECT * from " + currentTable);
 	data = res->getMetaData();
 	RootPageView->UpdateGrid(res, data);
 	SimpleBookMain->ChangeSelection(Root_page_view_id);
 	delete stmt;
 	delete res;
+}
+
+void MyFrame1::ShowTable(std::string nameTable)
+{
+	stmt = con->createStatement();
+	res = stmt->executeQuery("SELECT * from " + nameTable);
+	data = res->getMetaData();
+	RootPageView->UpdateGrid(res, data);
+	delete stmt;
+	delete res;
+}
+
+void MyFrame1::ShowAddProduct(wxCommandEvent& event)
+{
+	SimpleBookMain->ChangeSelection(Root_page_add_product_id);
+}
+
+void MyFrame1::PictureImage(wxFileDirPickerEvent& event)
+{
+	RootPageAddPro->UpdateSelectImage();
+}
+
+void MyFrame1::AddProduct(wxCommandEvent& event)
+{
+	ShowTable("product");
+	RootPageAddPro->AddProduct(LastId(RootPageView->gridTable), prep_stmt, con);
+}
+
+void MyFrame1::RemoveElement(wxCommandEvent& event)
+{
+	wxNumberEntryDialog dialog(this,
+					wxT("Введите ID удаляемого значения"),
+					wxT("ID товара: "),
+					wxT("Ввод ID"), 1, 1, 100);
+	int id = 0;
+	if (dialog.ShowModal() == wxID_OK)
+	{
+		id = dialog.GetValue();
+		RootPageView->RemoveElement(id);
+	}
+	try
+	{
+		stmt = con->createStatement();
+		stmt->executeQuery("DELETE FROM " + currentTable + " WHERE id=" + std::to_string(id));
+	}
+	catch(sql::SQLException &e)
+	{
+		std::cout << e.what() << std::endl;
+	}
+	delete stmt;
+}
+
+int MyFrame1::LastId(wxGrid* grid)
+{
+    std::vector <int> CurrentId;
+	int row = grid->GetNumberRows() - 1;
+	int size_id = std::stoi(grid->GetCellValue(row, 0).ToStdString()) + 10;
+    CurrentId.reserve(size_id);
+    for (int i=0; i < grid->GetNumberRows(); i++)
+    {
+        CurrentId.push_back(std::stoi(grid->GetCellValue(i, 0).ToStdString()));
+    }
+    for (int i=1; i < grid->GetNumberRows() + 10; i++)
+    {
+        if (std::find(CurrentId.begin(), CurrentId.end(), i) != CurrentId.end())
+        {
+			continue;
+        }
+		else
+		{
+			std::cout << "Следующий id равен = " << i << std::endl;
+            return i;
+		}
+    }
+	return -1;
+}
+
+void MyFrame1::ShowAddUser(wxCommandEvent& event)
+{
+	SimpleBookMain->ChangeSelection(Root_page_add_user_id);
+}
+
+void MyFrame1::AddUser(wxCommandEvent& event)
+{
+	ShowTable("users");
+	RootPageAddUsr->AddUser(LastId(RootPageView->gridTable), prep_stmt, con);
 }

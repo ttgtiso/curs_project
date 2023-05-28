@@ -24,6 +24,9 @@
 #include <wx/animate.h>
 #include <wx/vector.h>
 #include <wx/grid.h>
+#include <wx/filepicker.h>
+#include <wx/filefn.h>
+#include <wx/numdlg.h>
 //Подключение конектора MySQL C++
 #include <mysql_driver.h>
 #include <mysql_connection.h>
@@ -36,6 +39,7 @@
 #include <math.h>
 #include <vector>
 #include <string>
+#include <algorithm>
 
 class MyApp : public wxApp
 {

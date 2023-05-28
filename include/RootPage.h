@@ -46,13 +46,84 @@ class RootPageViewColumn : public wxPanel
 {
 protected:
     wxBoxSizer* mainSizer;
+    wxBoxSizer* downSizer;
     wxStaticText* nameTable;
-    wxGrid* gridTable;
 public:
+    wxGrid* gridTable;
     wxButton* backButton;
+    wxButton* removeButton;
     RootPageViewColumn(wxWindow *parent, const wxPoint &pos, const wxSize &size);
     void UpdateGrid(sql::ResultSet* res, sql::ResultSetMetaData* data);
     void RemoveGrid();
+    void RemoveElement(int id);
+};
+
+class RootPageAddProduct : public wxPanel
+{
+protected:
+    /******************| Графические элементы |*******************/
+    wxBoxSizer* mainSizer;
+
+    wxBoxSizer* horizontalSizer;
+    wxBoxSizer* leftSizer;
+    wxBoxSizer* rightSizer;
+    
+    wxStaticBitmap* imageProduct;
+    
+    wxStaticText* productText1;
+    wxTextCtrl* productEdit1;
+    wxStaticText* productText2;
+    wxTextCtrl* productEdit2;
+    wxStaticText* productText3;
+    wxTextCtrl* productEdit3;
+    wxStaticText* productText4;
+    wxTextCtrl* productEdit4;
+    wxStaticText* productText5;
+    wxTextCtrl* productEdit5;
+    wxStaticText* productText6;
+    wxTextCtrl* productEdit6;
+    wxStaticText* productText7;
+    wxTextCtrl* productEdit7;
+
+    wxBoxSizer* downSizer;
+
+    /******************| Обычные переменные |*******************/
+    wxBitmap* imageBitmap;
+    
+public:
+    wxButton* addButton;
+    wxButton* backButton;
+    wxFilePickerCtrl* imagePicker;
+    RootPageAddProduct(wxWindow *parent, const wxPoint &pos, const wxSize &size);
+    void UpdateSelectImage();
+    void AddProduct(int id, sql::PreparedStatement *prep_stmt, sql::Connection *con);
+};
+
+class RootPageAddUser : public wxPanel
+{
+protected:
+    wxBoxSizer* mainSizer;
+    wxBoxSizer* verticalSizer;
+    wxBoxSizer* downSizer;
+
+    wxStaticText* userText1;
+    wxTextCtrl* userEdit1;
+    wxStaticText* userText2;
+    wxTextCtrl* userEdit2;
+    wxStaticText* userText3;
+    wxTextCtrl* userEdit3;
+    wxStaticText* userText4;
+    wxTextCtrl* userEdit4;
+    wxStaticText* userText5;
+    wxTextCtrl* userEdit5;
+    wxStaticText* userText6;
+    wxTextCtrl* userEdit6;
+
+public:
+    wxButton* backButton;
+    wxButton* addButton;
+    RootPageAddUser(wxWindow *parent, const wxPoint &pos, const wxSize &size);
+    void AddUser(int id, sql::PreparedStatement *prep_stmt, sql::Connection *con);
 };
 
 #endif

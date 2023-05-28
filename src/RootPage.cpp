@@ -37,11 +37,11 @@ RootPagePanel::RootPagePanel(wxWindow *parent, const wxPoint &pos, const wxSize 
     rightDownSizer = new wxBoxSizer(wxVERTICAL);
     showTable = new wxButton(this, wxID_ANY, wxT("Посмотреть записи в таблице."));
     addUser = new wxButton(this, wxID_ANY, wxT("Добавление нового пользователя"));
-    editUser = new wxButton(this, wxID_ANY, wxT("Редактирование существующих пользователей"));
+    //editUser = new wxButton(this, wxID_ANY, wxT("Редактирование существующих пользователей"));
     addProduct = new wxButton(this, wxID_ANY, wxT("Добавить товар"));
     rightDownSizer->Add(showTable);
     rightDownSizer->Add(addUser);
-    rightDownSizer->Add(editUser);
+    //rightDownSizer->Add(editUser);
     rightDownSizer->Add(addProduct);
     
     downSizer->Add(leftDownSizer, 1, wxEXPAND);
@@ -105,11 +105,17 @@ RootPageViewColumn::RootPageViewColumn(wxWindow *parent, const wxPoint &pos, con
 	// Cell Defaults
 	gridTable->SetDefaultCellAlignment(wxALIGN_LEFT, wxALIGN_TOP);
 
+    downSizer = new wxBoxSizer(wxHORIZONTAL);
+    removeButton = new wxButton(this, wxID_ANY, wxT("Удалить запись"));
     backButton = new wxButton(this, wxID_ANY, wxT("Вернуться"));
+
+    downSizer->Add(0, 0, 1, wxEXPAND, 5);
+    downSizer->Add(removeButton, 0, wxALL, 5);
+    downSizer->Add(backButton, 0, wxALL, 5);
 
     mainSizer->Add(nameTable);
     mainSizer->Add(gridTable, 1, wxALL|wxEXPAND, 5);
-    mainSizer->Add(backButton);
+    mainSizer->Add(downSizer, 0, wxEXPAND);
 
     this->SetSizer(mainSizer);
 }
@@ -166,7 +172,6 @@ void RootPageViewColumn::UpdateGrid(sql::ResultSet* res, sql::ResultSetMetaData*
     
     gridTable->AutoSize();
     Layout();
-    
 }
 
 void RootPageViewColumn::RemoveGrid()
@@ -180,4 +185,203 @@ void RootPageViewColumn::RemoveGrid()
         gridTable->DeleteRows(0, gridTable->GetNumberRows());
         gridTable->DeleteCols(0, gridTable->GetNumberCols());
     }
+}
+
+void RootPageViewColumn::RemoveElement(int id)
+{
+    gridTable->DeleteRows(id-1, id);
+}
+
+RootPageAddProduct::RootPageAddProduct(wxWindow *parent, const wxPoint &pos, const wxSize &size)
+    : wxPanel(parent, wxID_ANY, pos, size)
+{
+    mainSizer = new wxBoxSizer(wxVERTICAL);
+    
+    backButton = new wxButton(this, wxID_ANY, wxT("Назад"));
+    horizontalSizer = new wxBoxSizer(wxHORIZONTAL);
+    
+    leftSizer = new wxBoxSizer(wxVERTICAL);
+    imageProduct = new wxStaticBitmap(this, wxID_ANY, wxNullBitmap);
+    wxString tmp = "BMP Files (*.bmp)|*.bmp|PNG Files (*.png)|*.png|JPEG Files (*.jpg)|*.jpg;*jpeg| All files|*.*";
+    imagePicker = new wxFilePickerCtrl(this, wxID_ANY, wxT("Выберете изображение"), wxT("Выберете изображение"), tmp);
+
+    leftSizer->Add(imageProduct, 0);
+    leftSizer->Add(imagePicker, 0, wxEXPAND);
+
+    rightSizer = new wxBoxSizer(wxVERTICAL);
+
+    productText1 = new wxStaticText(this, wxID_ANY, wxT("Артикул товара"));
+    productEdit1 = new wxTextCtrl(this, wxID_ANY);
+    productText2 = new wxStaticText(this, wxID_ANY, wxT("Название"));
+    productEdit2 = new wxTextCtrl(this, wxID_ANY);
+    productText3 = new wxStaticText(this, wxID_ANY, wxT("Производитель"));
+    productEdit3 = new wxTextCtrl(this, wxID_ANY);
+    productText4 = new wxStaticText(this, wxID_ANY, wxT("Цена"));
+    productEdit4 = new wxTextCtrl(this, wxID_ANY);
+    productText5 = new wxStaticText(this, wxID_ANY, wxT("Гарантия"));
+    productEdit5 = new wxTextCtrl(this, wxID_ANY);
+    productText6 = new wxStaticText(this, wxID_ANY, wxT("Количество"));
+    productEdit6 = new wxTextCtrl(this, wxID_ANY);
+    productText7 = new wxStaticText(this , wxID_ANY, wxT("Описание"));
+    productEdit7 = new wxTextCtrl(this , wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
+    downSizer = new wxBoxSizer(wxHORIZONTAL);
+    addButton = new wxButton(this, wxID_ANY, wxT("Добавить"));
+    
+    downSizer->Add(0, 0, 1, wxEXPAND, 5);
+    downSizer->Add(addButton, 0, wxALIGN_BOTTOM);
+
+    rightSizer->Add(productText1, 0, wxTop, 5);
+    rightSizer->Add(productEdit1, 1, wxEXPAND | wxALL, 5);
+    rightSizer->Add(productText2, 0, wxTop, 5);
+    rightSizer->Add(productEdit2, 1, wxEXPAND | wxALL, 5);
+    rightSizer->Add(productText3, 0, wxTop, 5);
+    rightSizer->Add(productEdit3, 1, wxEXPAND | wxALL, 5);
+    rightSizer->Add(productText4, 0, wxTop, 5);
+    rightSizer->Add(productEdit4, 1, wxEXPAND | wxALL, 5);
+    rightSizer->Add(productText5, 0, wxTop, 5);
+    rightSizer->Add(productEdit5, 1, wxEXPAND | wxALL, 5);
+    rightSizer->Add(productText6, 0, wxTop, 5);
+    rightSizer->Add(productEdit6, 1, wxEXPAND | wxALL, 5);
+    rightSizer->Add(productText7, 0, wxTop, 5);
+    rightSizer->Add(productEdit7, 2, wxEXPAND);
+    rightSizer->Add(downSizer, 1, wxEXPAND);
+
+    horizontalSizer->Add(leftSizer, 1, wxEXPAND);
+    horizontalSizer->Add(rightSizer, 1, wxEXPAND);
+
+    mainSizer->Add(backButton, 0);
+    mainSizer->Add(horizontalSizer, 1, wxEXPAND);
+    UpdateSelectImage();
+    this->SetSizer(mainSizer);
+}
+
+void RootPageAddProduct::UpdateSelectImage()
+{
+    if (imagePicker->GetPath() == wxT("Выберете изображение"))
+    {
+        imageBitmap = new wxBitmap(wxT("image/app/image_not_found.png"));
+        imageProduct->SetBitmap(*imageBitmap);
+    }
+    else
+    {
+        delete imageBitmap;
+        imageBitmap = new wxBitmap(imagePicker->GetPath());
+        imageProduct->SetBitmap(*imageBitmap);
+    }
+}
+
+void RootPageAddProduct::AddProduct(int id, sql::PreparedStatement *prep_stmt, sql::Connection *con)
+{
+    std::string string1 = productEdit1->GetValue().ToStdString();
+    std::string string2 = productEdit2->GetValue().ToStdString();
+    std::string string3 = productEdit3->GetValue().ToStdString();
+    std::string string4 = productEdit4->GetValue().ToStdString();
+    std::string string5 = productEdit5->GetValue().ToStdString();
+    std::string string6 = productEdit6->GetValue().ToStdString();
+    std::wstring string9 = productEdit7->GetValue().ToStdWstring();
+    std::string string10(string9.begin(), string9.end());
+    wxString PathToImage = imagePicker->GetPath();
+    std::wstring string7 = PathToImage.ToStdWstring();
+    std::string tmp1(string7.rbegin(), string7.rbegin()+4);
+    std::string tmp2(tmp1.rbegin(), tmp1.rend());
+    std::cout << string7 << std::endl;
+    wxString new_file = "image/src/test" + std::to_string(id) + tmp2;
+    string7 = new_file.ToStdWstring();
+    std::string string8(string7.begin(), string7.end());
+    wxCopyFile(PathToImage, new_file);
+    try
+    {
+		std::cout << "Выполнение подключения к базе данных..." << std::endl;
+		prep_stmt = con->prepareStatement("INSERT INTO product VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		prep_stmt->setInt(1, id);
+		prep_stmt->setString(2, string1);
+		prep_stmt->setString(3, string2);
+		prep_stmt->setString(4, string3);
+		prep_stmt->setInt(5, std::stoi(string4));
+		prep_stmt->setInt(6, std::stoi(string5));
+		prep_stmt->setInt(7, std::stoi(string6));
+        prep_stmt->setString(8, string8);
+        prep_stmt->setString(9, string10);
+		prep_stmt->execute();
+		std::cout << "Выполнение запроса завершено" << std::endl;
+		delete prep_stmt;
+	} 
+	catch(sql::SQLException &e)
+	{
+		std::cout << e.what() << std::endl;
+	}
+}
+
+RootPageAddUser::RootPageAddUser(wxWindow *parent, const wxPoint &pos, const wxSize &size)
+    : wxPanel(parent, wxID_ANY, pos, size)
+{
+    mainSizer = new wxBoxSizer(wxVERTICAL);
+    verticalSizer = new wxBoxSizer(wxVERTICAL);
+
+    userText1 = new wxStaticText(this, wxID_ANY, wxT("Логин"));
+    userEdit1 = new wxTextCtrl(this, wxID_ANY);
+    userText2 = new wxStaticText(this, wxID_ANY, wxT("Пароль"));
+    userEdit2 = new wxTextCtrl(this, wxID_ANY);
+    userText3 = new wxStaticText(this, wxID_ANY, wxT("Уровень привилегий"));
+    userEdit3 = new wxTextCtrl(this, wxID_ANY);
+    userText4 = new wxStaticText(this, wxID_ANY, wxT("ФИО"));
+    userEdit4 = new wxTextCtrl(this, wxID_ANY);
+    userText5 = new wxStaticText(this, wxID_ANY, wxT("Телефон"));
+    userEdit5 = new wxTextCtrl(this, wxID_ANY);
+    userText6 = new wxStaticText(this, wxID_ANY, wxT("Количество покупок"));
+    userEdit6 = new wxTextCtrl(this, wxID_ANY);
+    
+    verticalSizer->Add(userText1);
+    verticalSizer->Add(userEdit1);
+    verticalSizer->Add(userText2);
+    verticalSizer->Add(userEdit2);
+    verticalSizer->Add(userText3);
+    verticalSizer->Add(userEdit3);
+    verticalSizer->Add(userText4);
+    verticalSizer->Add(userEdit4);
+    verticalSizer->Add(userText5);
+    verticalSizer->Add(userEdit5);
+    verticalSizer->Add(userText6);
+    verticalSizer->Add(userEdit6);
+
+    downSizer = new wxBoxSizer(wxHORIZONTAL);
+    addButton = new wxButton(this, wxID_ANY, wxT("Добавить"));
+    backButton = new wxButton(this, wxID_ANY, wxT("Вернуться"));
+    downSizer->Add(0, 0, 1, wxEXPAND, 5);
+    downSizer->Add(addButton);
+
+    mainSizer->Add(backButton);
+    mainSizer->Add(verticalSizer);
+    mainSizer->Add(downSizer);
+
+    this->SetSizerAndFit(mainSizer);
+}
+
+void RootPageAddUser::AddUser(int id, sql::PreparedStatement *prep_stmt, sql::Connection *con)
+{
+    std::string string1 = userEdit1->GetValue().ToStdString();
+    std::string string2 = userEdit2->GetValue().ToStdString();
+    std::string string3 = userEdit3->GetValue().ToStdString();
+    std::string string4 = userEdit4->GetValue().ToStdString();
+    std::string string5 = userEdit5->GetValue().ToStdString();
+    std::string string6 = userEdit6->GetValue().ToStdString();
+    try
+    {
+		std::cout << "Выполнение подключения к базе данных..." << std::endl;
+		prep_stmt = con->prepareStatement("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?)");
+		prep_stmt->setInt(1, id);
+		prep_stmt->setString(2, string1);
+		prep_stmt->setString(3, string2);
+		prep_stmt->setInt(4, std::stoi(string3));
+		prep_stmt->setString(5, string4);
+		prep_stmt->setString(6, string5);
+		prep_stmt->setInt(7, std::stoi(string6));
+		prep_stmt->execute();
+		std::cout << "Выполнение запроса завершено" << std::endl;
+		delete prep_stmt;
+	} 
+	catch(sql::SQLException &e)
+	{
+		std::cout << e.what() << std::endl;
+	}
 }

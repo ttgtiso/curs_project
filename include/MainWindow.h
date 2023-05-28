@@ -16,6 +16,8 @@ class MyFrame1 : public wxFrame
 		wxSimplebook* SimpleBookMain;
 		RootPagePanel* RootPage;
 		RootPageViewColumn* RootPageView;
+		RootPageAddProduct* RootPageAddPro;
+		RootPageAddUser* RootPageAddUsr;
 		LoginPagePanel* LoginPage;
 		RegPagePanel* RegPage;
 		ShopPagePanel* ShopPage;
@@ -29,12 +31,22 @@ class MyFrame1 : public wxFrame
 		void ConnectEventButtonsShopPage();
 		void OnLogin( wxCommandEvent& event );
 		void OnReged( wxCommandEvent& event );
-		void SetUser();
 		void Relogin( wxCommandEvent& event );
-		void ShowTable( wxCommandEvent& event );
+		void ShowTable( wxCommandEvent& event ); // Перегрузка ShowTable
+		void ShowAddProduct( wxCommandEvent& event );
+		void ShowAddUser( wxCommandEvent& event );
 		void BackRoot( wxCommandEvent& event );
-		
-		/***************|    События приложения   |*********************/
+		void PictureImage( wxFileDirPickerEvent& event );
+		void AddProduct( wxCommandEvent& event );
+		void AddUser( wxCommandEvent& event );
+		void RemoveElement( wxCommandEvent& event );
+
+		/***************|     Дополнительные функции   |*********************/
+		void SetUser();
+		int LastId(wxGrid* grid);
+		void ShowTable(std::string nameTable); // Перегрузка ShowTable
+
+		/***************|      Переменные MySQL    |*********************/
 		sql::mysql::MySQL_Driver *driver;
 		sql::Connection *con;
 		sql::Statement *stmt; // Данный тип поддерживает только простые SQL запросы
@@ -42,12 +54,12 @@ class MyFrame1 : public wxFrame
 		sql::ResultSet *res;
 		sql::ResultSetMetaData* data;
 
-		/***************|    настройки текующего пользователя   |*********************/
+		/***************|    Настройки текующего пользователя   |*********************/
 		wxString userName;
 		int userPrivilege;
 		bool userLogining;
+		std::string currentTable;
 		
-
 	public:
 		HomePagePanel* HomePage;
 		virtual void OnSize(wxSizeEvent& event);
