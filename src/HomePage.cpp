@@ -1,6 +1,7 @@
 #include <HomePage.h>
 
-ShopElement::ShopElement(wxWindow *parent, const wxPoint &pos, const wxSize &size) : wxPanel(parent, wxID_ANY, pos, size)
+ShopElement::ShopElement(wxWindow *parent, const wxPoint &pos, const wxSize &size)
+ : wxPanel(parent, wxID_ANY, pos, size)
 {
 	// Создание "Центра управления картинкой"
 	mainBoxSizer = new wxBoxSizer(wxVERTICAL);
@@ -49,14 +50,22 @@ void ShopElement::updateData(int id, std::string artiul, std::string model,
 	image = new wxImage(originalImage->Scale(480, 346));
 	bitmapImage = new wxBitmap(*image);
 	StaticBitmap->SetBitmap(*bitmapImage);
+	delete bitmapImage;
+	delete image;
 }
 
-HomePagePanel::HomePagePanel(wxWindow *parent, const wxPoint &pos, const wxSize &size) : wxPanel(parent, wxID_ANY, pos, size)
+HomePagePanel::HomePagePanel(wxWindow *parent, const wxPoint &pos, const wxSize &size) 
+ : wxPanel(parent, wxID_ANY, pos, size)
 {
 	// Логин панель и её элементы
 	LoginPanel = new wxStaticBox(this, wxID_ANY, wxT("Current User"), wxDefaultPosition, wxSize(200, 100));
 	LoginPanelSizer = new wxStaticBoxSizer(LoginPanel, wxVERTICAL);
-	BasketButton = new wxBitmapButton(this, wxID_ANY, wxBitmap("image/app/basket.png"));
+	wxImage* tmpImage = new wxImage(wxT("image/app/basket.png"));
+	wxBitmap* tmpBitmap = new wxBitmap(*tmpImage);
+	BasketButton = new wxBitmapButton(this, wxID_ANY, wxNullBitmap);
+	BasketButton->SetBitmap(*tmpBitmap);
+	delete tmpImage;
+	delete tmpBitmap;
 	BasketButton->SetHelpText(wxT("Зарегестрируйтесь что бы получить доступ к этому разделу."));
 
 	LoginLabel = new wxStaticText(LoginPanel, wxID_ANY, wxT("Аунтифицируйтесь в системе"));
@@ -93,14 +102,11 @@ HomePagePanel::HomePagePanel(wxWindow *parent, const wxPoint &pos, const wxSize 
 
 void ShopElement::updateImage()
 {
-	if (image->IsOk())
-	{
-		delete bitmapImage;
-		delete image;
-		image = new wxImage(originalImage->Scale(ImageBoxSizer->GetSize().x, ImageBoxSizer->GetSize().y));
-		bitmapImage = new wxBitmap(*image);
-		StaticBitmap->SetBitmap(*bitmapImage);
-	}
+	image = new wxImage(originalImage->Scale(ImageBoxSizer->GetSize().x, ImageBoxSizer->GetSize().y));
+	bitmapImage = new wxBitmap(*image);
+	StaticBitmap->SetBitmap(*bitmapImage);
+	delete bitmapImage;
+	delete image;
 }
 
 // Принимает на вход таблицу "товары" а также количество колонок на одну строку.
@@ -164,3 +170,27 @@ void HomePagePanel::UpdateImage()
 		ShopElements.at(i)->updateImage();
 	}
 }
+
+HomePageBasket::HomePageBasket(wxWindow *parent, const wxPoint &pos, const wxSize &size)
+ : wxPanel(parent, wxID_ANY, pos, size)
+ {
+	mainSizer = new wxBoxSizer(wxVERTICAL);
+	upSizer = new wxBoxSizer(wxHORIZONTAL);
+	backButton = new wxButton(this, wxID_ANY, wxT("Вернуться"));
+	namePage = new wxStaticText(this, wxID_ANY, wxT("Корзина"));
+	cancelButton = new wxButton(this, wxID_ANY, wxT("Очистить корзину"));
+	panelElement = new wxScrolledWindow(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxVSCROLL);
+	
+	upSizer->Add(backButton);
+	upSizer->Add(namePage);
+	
+	downSizer = new wxBoxSizer(wxHORIZONTAL);
+	downSizer->Add(0, 0, 1, wxEXPAND, 5);
+	downSizer->Add(cancelButton);
+
+	mainSizer->Add(upSizer, 0, wxEXPAND);
+	mainSizer->Add(panelElement, 1, wxEXPAND);
+	mainSizer->Add(downSizer, 0, wxEXPAND);
+	
+	this->SetSizer(mainSizer);
+ }

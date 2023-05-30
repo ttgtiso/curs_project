@@ -1,6 +1,7 @@
 #include <RegPage.h>
 
-RegPagePanel::RegPagePanel(wxWindow *parent, const wxPoint &pos, const wxSize &size) : wxPanel(parent, wxID_ANY, pos, size)
+RegPagePanel::RegPagePanel(wxWindow *parent, const wxPoint &pos, const wxSize &size) 
+ : wxPanel(parent, wxID_ANY, pos, size)
 {
     // Главный sizer
     mainSizer = new wxBoxSizer(wxVERTICAL);

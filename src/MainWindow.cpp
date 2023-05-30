@@ -9,10 +9,12 @@ enum Panel_id
 	Root_page_id,
 	Root_page_view_id,
 	Root_page_add_product_id,
-	Root_page_add_user_id
+	Root_page_add_user_id,
+	Home_basket_id
 };
 
-MyFrame1::MyFrame1(const wxString &title, const wxPoint &pos, const wxSize &size) : wxFrame(nullptr, wxID_ANY, title, pos, size)
+MyFrame1::MyFrame1(const wxString &title, const wxPoint &pos, const wxSize &size)
+: wxFrame(nullptr, wxID_ANY, title, pos, size)
 {
 	// Настройка драйвера MySQL
 	driver = sql::mysql::get_mysql_driver_instance();
@@ -27,6 +29,10 @@ MyFrame1::MyFrame1(const wxString &title, const wxPoint &pos, const wxSize &size
 	HomePage = new HomePagePanel(SimpleBookMain, wxDefaultPosition, wxDefaultSize);
 	HomePage->LoginButton->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::ShownLoginPage), NULL, this);
 	HomePage->RegButton->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::ShownRegedPage), NULL, this);
+	HomePage->BasketButton->Connect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::ShowBasketPage), NULL ,this);
+
+	HomeBasket = new HomePageBasket(SimpleBookMain, wxDefaultPosition, wxDefaultSize);
+	HomeBasket->backButton->Connect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::Back_main_window), NULL, this);
 
 	res = stmt->executeQuery("SELECT * from product");
 	HomePage->Init(res, 5);
@@ -70,6 +76,7 @@ MyFrame1::MyFrame1(const wxString &title, const wxPoint &pos, const wxSize &size
 	SimpleBookMain->AddPage(RootPageView, wxT("Root page view"));
 	SimpleBookMain->AddPage(RootPageAddPro, wxT("Root page add product"));
 	SimpleBookMain->AddPage(RootPageAddUsr, wxT("Root page add user"));
+	SimpleBookMain->AddPage(HomeBasket, wxT("Home Page Basket"));
 
 	ConnectEventButtonsShopPage();
 }
@@ -79,6 +86,7 @@ MyFrame1::~MyFrame1()
 	// Отключение событий
 	HomePage->LoginButton->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame1::ShownLoginPage ), NULL, this);
 	HomePage->RegButton->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame1::ShownRegedPage ), NULL, this);
+	HomeBasket->backButton->Disconnect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::Back_main_window), NULL, this);
 	LoginPage->LoginingButton->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::OnLogin), NULL, this);
 	LoginPage->backButton->Disconnect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::Back_main_window), NULL, this);
 	RegPage->LoginingButton->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::OnReged), NULL, this);
@@ -362,4 +370,9 @@ void MyFrame1::AddUser(wxCommandEvent& event)
 {
 	ShowTable("users");
 	RootPageAddUsr->AddUser(LastId(RootPageView->gridTable), prep_stmt, con);
+}
+
+void MyFrame1::ShowBasketPage(wxCommandEvent& event)
+{
+	SimpleBookMain->ChangeSelection(Home_basket_id);
 }

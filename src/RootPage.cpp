@@ -1,6 +1,7 @@
 #include <RootPage.h>
 
-RootPagePanel::RootPagePanel(wxWindow *parent, const wxPoint &pos, const wxSize &size) : wxPanel(parent, wxID_ANY, pos, size)
+RootPagePanel::RootPagePanel(wxWindow *parent, const wxPoint &pos, const wxSize &size) 
+: wxPanel(parent, wxID_ANY, pos, size)
 {
     mainSizer = new wxBoxSizer(wxVERTICAL);
 
@@ -10,8 +11,6 @@ RootPagePanel::RootPagePanel(wxWindow *parent, const wxPoint &pos, const wxSize 
     logoPanel = new wxPanel(this, wxID_ANY);
     logoSizer = new wxBoxSizer(wxVERTICAL);
     originalImage = new wxImage(wxT("image/app/full_logo.png"));
-    image = new wxImage();
-    bitmapImage = new wxBitmap();
     logoImage = new wxStaticBitmap(logoPanel, wxID_ANY, wxNullBitmap);
     logoSizer->Add(logoImage);
     logoPanel->SetSizer(logoSizer);
@@ -64,11 +63,11 @@ void RootPagePanel::UpdateList(sql::ResultSet* res)
 
 void RootPagePanel::UpdateImage()
 {
-	delete bitmapImage;
-	delete image;
 	image = new wxImage(originalImage->Scale(loginPanel->GetSize().x * 2, loginPanel->GetSize().y));
 	bitmapImage = new wxBitmap(*image);
 	logoImage->SetBitmap(*bitmapImage);
+    delete bitmapImage;
+	delete image;
 }
 
 void RootPagePanel::clearData()
@@ -368,7 +367,7 @@ void RootPageAddUser::AddUser(int id, sql::PreparedStatement *prep_stmt, sql::Co
     try
     {
 		std::cout << "Выполнение подключения к базе данных..." << std::endl;
-		prep_stmt = con->prepareStatement("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?)");
+		prep_stmt = con->prepareStatement("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 		prep_stmt->setInt(1, id);
 		prep_stmt->setString(2, string1);
 		prep_stmt->setString(3, string2);
@@ -376,6 +375,7 @@ void RootPageAddUser::AddUser(int id, sql::PreparedStatement *prep_stmt, sql::Co
 		prep_stmt->setString(5, string4);
 		prep_stmt->setString(6, string5);
 		prep_stmt->setInt(7, std::stoi(string6));
+        prep_stmt->setString(8, "");
 		prep_stmt->execute();
 		std::cout << "Выполнение запроса завершено" << std::endl;
 		delete prep_stmt;

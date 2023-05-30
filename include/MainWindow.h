@@ -21,6 +21,7 @@ class MyFrame1 : public wxFrame
 		LoginPagePanel* LoginPage;
 		RegPagePanel* RegPage;
 		ShopPagePanel* ShopPage;
+		HomePageBasket* HomeBasket;
 
 		/***************|    События приложения   |*********************/
 		virtual void ShownLoginPage( wxCommandEvent& event );
@@ -28,7 +29,6 @@ class MyFrame1 : public wxFrame
 		virtual void Back_main_window( wxCommandEvent& event ); 
 		virtual void ViewContent( wxCommandEvent& event );
 		virtual void ViewBack( wxCommandEvent& event );
-		void ConnectEventButtonsShopPage();
 		void OnLogin( wxCommandEvent& event );
 		void OnReged( wxCommandEvent& event );
 		void Relogin( wxCommandEvent& event );
@@ -40,11 +40,13 @@ class MyFrame1 : public wxFrame
 		void AddProduct( wxCommandEvent& event );
 		void AddUser( wxCommandEvent& event );
 		void RemoveElement( wxCommandEvent& event );
+		void ShowBasketPage( wxCommandEvent& event );
 
 		/***************|     Дополнительные функции   |*********************/
 		void SetUser();
 		int LastId(wxGrid* grid);
 		void ShowTable(std::string nameTable); // Перегрузка ShowTable
+		void ConnectEventButtonsShopPage();
 
 		/***************|      Переменные MySQL    |*********************/
 		sql::mysql::MySQL_Driver *driver;

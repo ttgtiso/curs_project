@@ -45,10 +45,8 @@ protected:
 	wxBoxSizer* MainPanelSizer;
 	wxBoxSizer* UpPanelSizer;
 	wxBoxSizer* DownPanelSizer;
-	wxBitmapButton* BasketButton;
 	
 	// Элементы окна регистрации
-	
 	wxStaticBoxSizer* LoginPanelSizer;
 	wxStaticText* LoginLabel;
 	wxStaticText* RegLabel;
@@ -60,9 +58,28 @@ public:
 	wxVector <ShopElement*> ShopElements;
 	wxButton* LoginButton;
 	wxButton* RegButton;
+	wxBitmapButton* BasketButton;
     HomePagePanel(wxWindow *parent, const wxPoint &pos, const wxSize &size);
 	void Init(sql::ResultSet* res, float col_columns);
 	void UpdateImage();
+	void UpdateImage(wxSize size);
 };
+
+class HomePageBasket : public wxPanel
+{
+protected:
+	wxBoxSizer* mainSizer;
+	wxBoxSizer* upSizer;
+	wxBoxSizer* downSizer;
+	wxStaticText* namePage;
+	wxScrolledWindow* panelElement;
+	
+public:
+	wxButton* backButton;
+	wxButton* cancelButton;
+	HomePageBasket(wxWindow *parent, const wxPoint &pos, const wxSize &size);
+	void createElement(wxVector <ShopElement*> ShopElements);
+};
+
 
 #endif

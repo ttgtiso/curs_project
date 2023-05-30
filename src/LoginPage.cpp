@@ -1,6 +1,7 @@
 #include <LoginPage.h>
 
-LoginPagePanel::LoginPagePanel(wxWindow *parent, const wxPoint &pos, const wxSize &size) : wxPanel(parent, wxID_ANY, pos, size)
+LoginPagePanel::LoginPagePanel(wxWindow *parent, const wxPoint &pos, const wxSize &size) 
+: wxPanel(parent, wxID_ANY, pos, size)
 {
     mainSizer = new wxBoxSizer(wxVERTICAL);
     // Главный sizer

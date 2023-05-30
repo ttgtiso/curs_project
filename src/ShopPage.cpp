@@ -25,8 +25,6 @@ ShopPagePanel::ShopPagePanel(wxWindow *parent, const wxPoint &pos, const wxSize 
     
     aboutLabel = new wxStaticText(this, wxID_ANY, wxT(""));
     originalImage = new wxImage();
-    currentImage = new wxImage();
-    bitmapImage = new wxBitmap();
 
     labelSizer->Add(idLabel, 1, wxEXPAND);
     labelSizer->Add(articulLabel, 1, wxEXPAND);
@@ -68,18 +66,18 @@ void ShopPagePanel::UpdateData(ShopElement *Element)
 
 void ShopPagePanel::UpdateImage()
 {
-    delete bitmapImage;
-	delete currentImage;
 	currentImage = new wxImage(originalImage->Scale(labelPanel->GetSize().x, labelPanel->GetSize().y));
 	bitmapImage = new wxBitmap(*currentImage);
 	image->SetBitmap(*bitmapImage);
+    delete bitmapImage;
+	delete currentImage;
 }
 
 void ShopPagePanel::UpdateImage(wxSize size)
 {
-    delete bitmapImage;
-    delete currentImage;
     currentImage = new wxImage(originalImage->Scale(size.x, size.y));
     bitmapImage = new wxBitmap(*currentImage);
     image->SetBitmap(*bitmapImage);
+    delete bitmapImage;
+    delete currentImage;
 }
