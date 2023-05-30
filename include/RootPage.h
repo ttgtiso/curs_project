@@ -97,6 +97,7 @@ public:
     RootPageAddProduct(wxWindow *parent, const wxPoint &pos, const wxSize &size);
     void UpdateSelectImage();
     void AddProduct(int id, sql::PreparedStatement *prep_stmt, sql::Connection *con);
+    void ClearPage();
 };
 
 class RootPageAddUser : public wxPanel
@@ -124,6 +125,8 @@ public:
     wxButton* addButton;
     RootPageAddUser(wxWindow *parent, const wxPoint &pos, const wxSize &size);
     void AddUser(int id, sql::PreparedStatement *prep_stmt, sql::Connection *con);
+    void ClearPage();
+    
 };
 
 #endif

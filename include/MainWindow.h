@@ -41,6 +41,7 @@ class MyFrame1 : public wxFrame
 		void AddUser( wxCommandEvent& event );
 		void RemoveElement( wxCommandEvent& event );
 		void ShowBasketPage( wxCommandEvent& event );
+		void HomePageDraw ( wxPaintEvent& event );
 
 		/***************|     Дополнительные функции   |*********************/
 		void SetUser();

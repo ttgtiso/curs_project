@@ -11,7 +11,7 @@ ShopElement::ShopElement(wxWindow *parent, const wxPoint &pos, const wxSize &siz
 
 	ImagePanel = new wxPanel(this, wxID_ANY);
 	ImageBoxSizer = new wxBoxSizer(wxVERTICAL);
-	StaticBitmap = new wxStaticBitmap(ImagePanel, wxID_ANY, wxNullBitmap);
+	StaticBitmap = new wxPanel(ImagePanel, wxID_ANY);
 	
 	ImageBoxSizer->Add(StaticBitmap, 1, wxEXPAND | wxALL);
 	ImagePanel->SetSizerAndFit(ImageBoxSizer);
@@ -49,7 +49,36 @@ void ShopElement::updateData(int id, std::string artiul, std::string model,
 	LabelImagePrice->SetLabelText(this->price);
 	image = new wxImage(originalImage->Scale(480, 346));
 	bitmapImage = new wxBitmap(*image);
-	StaticBitmap->SetBitmap(*bitmapImage);
+	wxClientDC dc(StaticBitmap);
+	wxMemoryDC mdc;
+
+	int w,h;
+	dc.GetSize(&w, &h);
+	mdc.SelectObject(*bitmapImage);
+	dc.SetBackground(*wxWHITE_BRUSH);
+	dc.Clear();
+
+	dc.Blit(0, 0, bitmapImage->GetWidth(), bitmapImage->GetHeight(), &mdc, 0, 0, wxCOPY, 0);
+	mdc.SelectObject(wxNullBitmap);
+	delete bitmapImage;
+	delete image;
+}
+
+void ShopElement::DrawImage()
+{
+	image = new wxImage(originalImage->Scale(ImageBoxSizer->GetSize().x, ImageBoxSizer->GetSize().y));
+	bitmapImage = new wxBitmap(*image);
+
+	wxClientDC dc(StaticBitmap);
+	wxMemoryDC mdc;
+
+	int w,h;
+	dc.GetSize(&w, &h);
+	mdc.SelectObject(*bitmapImage);
+	dc.SetBackground(*wxWHITE_BRUSH);
+	dc.Clear();
+	dc.Blit(0, 0, bitmapImage->GetWidth(), bitmapImage->GetHeight(), &mdc, 0, 0, wxCOPY, 0);
+	mdc.SelectObject(wxNullBitmap);
 	delete bitmapImage;
 	delete image;
 }
@@ -104,7 +133,19 @@ void ShopElement::updateImage()
 {
 	image = new wxImage(originalImage->Scale(ImageBoxSizer->GetSize().x, ImageBoxSizer->GetSize().y));
 	bitmapImage = new wxBitmap(*image);
-	StaticBitmap->SetBitmap(*bitmapImage);
+
+	wxClientDC dc(StaticBitmap);
+	wxMemoryDC mdc;
+
+	int w,h;
+	dc.GetSize(&w, &h);
+	mdc.SelectObject(*bitmapImage);
+	dc.SetBackground(*wxWHITE_BRUSH);
+	dc.Clear();
+
+	dc.Blit(0, 0, bitmapImage->GetWidth(), bitmapImage->GetHeight(), &mdc, 0, 0, wxCOPY, 0);
+	mdc.SelectObject(wxNullBitmap);
+
 	delete bitmapImage;
 	delete image;
 }
@@ -167,7 +208,7 @@ void HomePagePanel::UpdateImage()
 	std::cout << "Update Image Size" << std::endl;
 	for (int i=0; i < ShopElements.size(); i++)
 	{
-		ShopElements.at(i)->updateImage();
+		ShopElements.at(i)->DrawImage();
 	}
 }
 

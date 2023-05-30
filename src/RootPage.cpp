@@ -145,7 +145,7 @@ void RootPageViewColumn::UpdateGrid(sql::ResultSet* res, sql::ResultSetMetaData*
         return ;
 	}
     res->last();
-    int last = res->getInt(1);
+    int last = res->getRow();
     res->first();
     
     gridTable->InsertCols(0, col_column);
@@ -188,7 +188,15 @@ void RootPageViewColumn::RemoveGrid()
 
 void RootPageViewColumn::RemoveElement(int id)
 {
-    gridTable->DeleteRows(id-1, id);
+    wxString tmp = std::to_string(id);
+    for (int i=0; i < gridTable->GetNumberRows(); i++)
+    {
+        if (gridTable->GetCellValue(i, 0) == tmp)
+        {
+            gridTable->DeleteRows(i, 1);
+            return ;
+        }
+    }
 }
 
 RootPageAddProduct::RootPageAddProduct(wxWindow *parent, const wxPoint &pos, const wxSize &size)
@@ -201,6 +209,7 @@ RootPageAddProduct::RootPageAddProduct(wxWindow *parent, const wxPoint &pos, con
     
     leftSizer = new wxBoxSizer(wxVERTICAL);
     imageProduct = new wxStaticBitmap(this, wxID_ANY, wxNullBitmap);
+    imageProduct->SetMaxSize(wxSize(400, 400));
     wxString tmp = "BMP Files (*.bmp)|*.bmp|PNG Files (*.png)|*.png|JPEG Files (*.jpg)|*.jpg;*jpeg| All files|*.*";
     imagePicker = new wxFilePickerCtrl(this, wxID_ANY, wxT("Выберете изображение"), wxT("Выберете изображение"), tmp);
 
@@ -311,6 +320,21 @@ void RootPageAddProduct::AddProduct(int id, sql::PreparedStatement *prep_stmt, s
 	}
 }
 
+void RootPageAddProduct::ClearPage()
+{
+    delete imageBitmap;
+    productEdit1->SetValue(*wxEmptyString);
+    productEdit2->SetValue(*wxEmptyString);
+    productEdit3->SetValue(*wxEmptyString);
+    productEdit4->SetValue(*wxEmptyString);
+    productEdit5->SetValue(*wxEmptyString);
+    productEdit6->SetValue(*wxEmptyString);
+    productEdit7->SetValue(*wxEmptyString);
+    imagePicker->SetPath(*wxEmptyString);
+    imageBitmap = new wxBitmap(wxT("image/app/image_not_found.png"));
+    imageProduct->SetBitmap(*imageBitmap);
+}
+
 RootPageAddUser::RootPageAddUser(wxWindow *parent, const wxPoint &pos, const wxSize &size)
     : wxPanel(parent, wxID_ANY, pos, size)
 {
@@ -384,4 +408,14 @@ void RootPageAddUser::AddUser(int id, sql::PreparedStatement *prep_stmt, sql::Co
 	{
 		std::cout << e.what() << std::endl;
 	}
+}
+
+void RootPageAddUser::ClearPage()
+{
+    userEdit1->SetValue(*wxEmptyString);
+    userEdit2->SetValue(*wxEmptyString);
+    userEdit3->SetValue(*wxEmptyString);
+    userEdit4->SetValue(*wxEmptyString);
+    userEdit5->SetValue(*wxEmptyString);
+    userEdit6->SetValue(*wxEmptyString);
 }

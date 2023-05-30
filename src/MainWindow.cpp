@@ -78,6 +78,8 @@ MyFrame1::MyFrame1(const wxString &title, const wxPoint &pos, const wxSize &size
 	SimpleBookMain->AddPage(RootPageAddUsr, wxT("Root page add user"));
 	SimpleBookMain->AddPage(HomeBasket, wxT("Home Page Basket"));
 
+	HomePage->Connect(wxEVT_PAINT, wxPaintEventHandler(MyFrame1::HomePageDraw), NULL ,this);
+
 	ConnectEventButtonsShopPage();
 }
 
@@ -156,7 +158,7 @@ void MyFrame1::OnSize(wxSizeEvent& event)
 {
 	if (HomePage->IsShown())
 	{
-		HomePage->UpdateImage();
+		//HomePage->UpdateImage();
 	}
 	if (ShopPage->IsShown())
 	{
@@ -168,6 +170,7 @@ void MyFrame1::OnSize(wxSizeEvent& event)
 		std::cout << "Root Page Update" << std::endl;
 		RootPage->UpdateImage();
 	}
+	Refresh();
 	event.Skip();
 }
 
@@ -310,6 +313,8 @@ void MyFrame1::AddProduct(wxCommandEvent& event)
 {
 	ShowTable("product");
 	RootPageAddPro->AddProduct(LastId(RootPageView->gridTable), prep_stmt, con);
+	RootPageAddPro->ClearPage();
+	SimpleBookMain->ChangeSelection(Root_page_id);
 }
 
 void MyFrame1::RemoveElement(wxCommandEvent& event)
@@ -370,9 +375,16 @@ void MyFrame1::AddUser(wxCommandEvent& event)
 {
 	ShowTable("users");
 	RootPageAddUsr->AddUser(LastId(RootPageView->gridTable), prep_stmt, con);
+	RootPageAddUsr->ClearPage();
+	SimpleBookMain->ChangeSelection(Root_page_id);
 }
 
 void MyFrame1::ShowBasketPage(wxCommandEvent& event)
 {
 	SimpleBookMain->ChangeSelection(Home_basket_id);
+}
+
+void MyFrame1::HomePageDraw(wxPaintEvent& event)
+{
+	HomePage->UpdateImage();
 }

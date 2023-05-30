@@ -12,15 +12,16 @@ class ShopElement : public wxPanel
 		wxStaticText* LabelImagePrice;
 		wxBoxSizer* ImageBoxSizer;
 		wxPanel* ImagePanel;
-		wxStaticBitmap* StaticBitmap;
 		wxImage* originalImage;
 
 	public:
 		wxButton* ViewButton;
 		wxBitmap* bitmapImage;
 		wxImage* image;
+		wxPanel* StaticBitmap;
 		ShopElement(wxWindow *parent, const wxPoint &pos, const wxSize &size);
 		void updateImage();
+		void DrawImage();
 		void updateData(int id, std::string artiul, std::string model,
 						std::string provider, int price, int warranty,
 						int count, std::string PathToImage);
