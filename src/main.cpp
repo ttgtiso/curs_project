@@ -12,6 +12,5 @@ bool MyApp::OnInit()
     frame1->Show(true);
     frame1->Bind(wxEVT_SIZE, &MyFrame1::OnSize, frame1);
     frame1->Layout();
-	frame1->HomePage->UpdateImage();
     return true;
 }

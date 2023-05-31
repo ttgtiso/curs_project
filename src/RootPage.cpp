@@ -139,7 +139,7 @@ void RootPageViewColumn::UpdateGrid(sql::ResultSet* res, sql::ResultSetMetaData*
         gridTable->InsertCols(0, col_column);
         for (int i=1; i<=count; i++)
         {
-            tmp = data->getColumnName(i);
+            tmp = data->getColumnName(i).asStdString();
             gridTable->SetColLabelValue(i-1, tmp);
         }
         return ;
@@ -161,8 +161,8 @@ void RootPageViewColumn::UpdateGrid(sql::ResultSet* res, sql::ResultSetMetaData*
     {
         for (int j=1; j <= col_column; j++)
         {
-            tmp = res->getString(j);
-            gridTable->SetCellValue(i, j-1, tmp);
+            tmp = res->getString(j).asStdString();
+            gridTable->SetCellValue(i, j-1, wxString::FromUTF8(tmp));
         }
         if (i == last)
             break;
@@ -280,19 +280,19 @@ void RootPageAddProduct::UpdateSelectImage()
 
 void RootPageAddProduct::AddProduct(int id, sql::PreparedStatement *prep_stmt, sql::Connection *con)
 {
-    std::string string1 = productEdit1->GetValue().ToStdString();
-    std::string string2 = productEdit2->GetValue().ToStdString();
-    std::string string3 = productEdit3->GetValue().ToStdString();
+    std::string string1 = productEdit1->GetValue().ToStdString(wxConvUTF8);
+    std::string string2 = productEdit2->GetValue().ToStdString(wxConvUTF8);
+    std::string string3 = productEdit3->GetValue().ToStdString(wxConvUTF8);
     std::string string4 = productEdit4->GetValue().ToStdString();
     std::string string5 = productEdit5->GetValue().ToStdString();
     std::string string6 = productEdit6->GetValue().ToStdString();
-    std::wstring string9 = productEdit7->GetValue().ToStdWstring();
-    std::string string10(string9.begin(), string9.end());
+    std::string string9 = productEdit7->GetValue().ToStdString(wxConvUTF8);
+    //std::string string10(string9.begin(), string9.end());
     wxString PathToImage = imagePicker->GetPath();
     std::wstring string7 = PathToImage.ToStdWstring();
     std::string tmp1(string7.rbegin(), string7.rbegin()+4);
     std::string tmp2(tmp1.rbegin(), tmp1.rend());
-    std::cout << string7 << std::endl;
+    
     wxString new_file = "image/src/test" + std::to_string(id) + tmp2;
     string7 = new_file.ToStdWstring();
     std::string string8(string7.begin(), string7.end());
@@ -309,7 +309,7 @@ void RootPageAddProduct::AddProduct(int id, sql::PreparedStatement *prep_stmt, s
 		prep_stmt->setInt(6, std::stoi(string5));
 		prep_stmt->setInt(7, std::stoi(string6));
         prep_stmt->setString(8, string8);
-        prep_stmt->setString(9, string10);
+        prep_stmt->setString(9, string9);
 		prep_stmt->execute();
 		std::cout << "Выполнение запроса завершено" << std::endl;
 		delete prep_stmt;

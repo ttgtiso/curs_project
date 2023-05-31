@@ -1,7 +1,7 @@
 #include <HomePage.h>
 
 ShopElement::ShopElement(wxWindow *parent, const wxPoint &pos, const wxSize &size)
- : wxPanel(parent, wxID_ANY, pos, size)
+ : wxPanel(parent, wxID_ANY, pos, size,  wxBORDER_THEME)
 {
 	// Создание "Центра управления картинкой"
 	mainBoxSizer = new wxBoxSizer(wxVERTICAL);
@@ -11,7 +11,8 @@ ShopElement::ShopElement(wxWindow *parent, const wxPoint &pos, const wxSize &siz
 
 	ImagePanel = new wxPanel(this, wxID_ANY);
 	ImageBoxSizer = new wxBoxSizer(wxVERTICAL);
-	StaticBitmap = new wxPanel(ImagePanel, wxID_ANY);
+	StaticBitmap = new wxStaticBitmap(ImagePanel, wxID_ANY, wxNullBitmap);
+	StaticBitmap->SetMinSize(wxSize(150, 150));
 	
 	ImageBoxSizer->Add(StaticBitmap, 1, wxEXPAND | wxALL);
 	ImagePanel->SetSizerAndFit(ImageBoxSizer);
@@ -29,7 +30,12 @@ ShopElement::ShopElement(wxWindow *parent, const wxPoint &pos, const wxSize &siz
 	image = new wxImage();
 
 	this->SetSizerAndFit(mainBoxSizer);
+}
 
+ShopElement::~ShopElement()
+{
+	mainBoxSizer->Clear(true);
+	delete originalImage;
 }
 
 void ShopElement::updateData(int id, std::string artiul, std::string model,
@@ -37,13 +43,13 @@ void ShopElement::updateData(int id, std::string artiul, std::string model,
 							int count, std::string PathToImage)
 {
 	this->id = std::to_string(id);
-	this->articul = artiul;
-	this->model = model;
-	this->provider = provider;
+	this->articul = wxString::FromUTF8(artiul);
+	this->model = wxString::FromUTF8(model);
+	this->provider = wxString::FromUTF8(provider);
 	this->price = std::to_string(price);
 	this->warranty = std::to_string(warranty);
 	this->count = std::to_string(count);
-	this->PathToImage = PathToImage;
+	this->PathToImage = wxString::FromUTF8(PathToImage);
 	originalImage->LoadFile(this->PathToImage);
 	LabelImageName->SetLabelText(this->model);
 	LabelImagePrice->SetLabelText(this->price);
@@ -60,25 +66,7 @@ void ShopElement::updateData(int id, std::string artiul, std::string model,
 
 	dc.Blit(0, 0, bitmapImage->GetWidth(), bitmapImage->GetHeight(), &mdc, 0, 0, wxCOPY, 0);
 	mdc.SelectObject(wxNullBitmap);
-	delete bitmapImage;
-	delete image;
-}
-
-void ShopElement::DrawImage()
-{
-	image = new wxImage(originalImage->Scale(ImageBoxSizer->GetSize().x, ImageBoxSizer->GetSize().y));
-	bitmapImage = new wxBitmap(*image);
-
-	wxClientDC dc(StaticBitmap);
-	wxMemoryDC mdc;
-
-	int w,h;
-	dc.GetSize(&w, &h);
-	mdc.SelectObject(*bitmapImage);
-	dc.SetBackground(*wxWHITE_BRUSH);
-	dc.Clear();
-	dc.Blit(0, 0, bitmapImage->GetWidth(), bitmapImage->GetHeight(), &mdc, 0, 0, wxCOPY, 0);
-	mdc.SelectObject(wxNullBitmap);
+	
 	delete bitmapImage;
 	delete image;
 }
@@ -117,9 +105,16 @@ HomePagePanel::HomePagePanel(wxWindow *parent, const wxPoint &pos, const wxSize 
 
 	// Нижняя часть приложения
 	DownPanelSizer = new wxBoxSizer(wxVERTICAL);
-	
-	//ShopPanel1 = new ShopElement(this, wxDefaultPosition, wxDefaultSize);
-	//DownPanelSizer->Add(ShopPanel1, 1, wxEXPAND | wxALL);
+	borderScroll = new wxPanel(this , wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_THEME);
+	borderSizer = new wxBoxSizer(wxVERTICAL);
+	borderScroll->SetSizer(borderSizer);
+	DownPanelScroll = new wxScrolledWindow(borderScroll, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxVSCROLL);
+	DownPanelScroll->SetScrollRate(10, 10);
+	DownPanelScrollSizer = new wxBoxSizer(wxVERTICAL);
+	borderSizer->Add(DownPanelScroll, 1, wxEXPAND);
+
+	DownPanelScroll->SetSizer(DownPanelScrollSizer);
+	DownPanelSizer->Add(borderScroll, 1, wxEXPAND | wxALL, 10);
 
 	// Главный Sizer приложения
 	MainPanelSizer = new wxBoxSizer(wxVERTICAL);
@@ -133,19 +128,7 @@ void ShopElement::updateImage()
 {
 	image = new wxImage(originalImage->Scale(ImageBoxSizer->GetSize().x, ImageBoxSizer->GetSize().y));
 	bitmapImage = new wxBitmap(*image);
-
-	wxClientDC dc(StaticBitmap);
-	wxMemoryDC mdc;
-
-	int w,h;
-	dc.GetSize(&w, &h);
-	mdc.SelectObject(*bitmapImage);
-	dc.SetBackground(*wxWHITE_BRUSH);
-	dc.Clear();
-
-	dc.Blit(0, 0, bitmapImage->GetWidth(), bitmapImage->GetHeight(), &mdc, 0, 0, wxCOPY, 0);
-	mdc.SelectObject(wxNullBitmap);
-
+	StaticBitmap->SetBitmap(*bitmapImage);
 	delete bitmapImage;
 	delete image;
 }
@@ -155,18 +138,26 @@ void HomePagePanel::Init(sql::ResultSet* res, float col_columns)
 {
 	int row = 1;
 	int columns = 1;
-	res->last();
 	// Функция ceil округляет в сторону большего значения.
-	int col_rows = ceil(res->getInt(1)/col_columns);
-	ShopPanels.reserve(col_rows);
+	//int col_rows = ceil(res->getInt(1)/col_columns);
+	ShopPanel.reserve(20);
+	for (int i = 0; i < 20; i++)
+	{
+		ShopPanel.push_back(new wxPanel(DownPanelScroll, wxID_ANY, wxDefaultPosition, wxDefaultSize));
+		DownPanelScrollSizer->Add(ShopPanel.at(i), 0, wxEXPAND | wxALL);
+	}
+	ShopPanels.reserve(20);
 	res->first();
-	ShopPanels.push_back(new wxBoxSizer(wxHORIZONTAL));
-	DownPanelSizer->Add(ShopPanels.at(0), 1, wxEXPAND | wxALL);
-	ShopElements.push_back(new ShopElement(this, wxDefaultPosition, wxDefaultSize));
+	for (int i = 0; i < 20; i++)
+	{
+		ShopPanels.push_back(new wxBoxSizer(wxHORIZONTAL));
+		ShopPanel.at(i)->SetSizer((ShopPanels.at(i)));
+	}
+	ShopElements.push_back(new ShopElement(ShopPanel.at(0), wxDefaultPosition, wxDefaultSize));
 	ShopElements.at(columns-1)->updateData(res->getInt(1), res->getString(2), res->getString(3),
 											res->getString(4), res->getInt(5), res->getInt(6),
 											res->getInt(7), res->getString(8));
-	ShopPanels.at(row-1)->Add(ShopElements.at(columns-1), 1, wxEXPAND | wxALL);
+	ShopPanels.at(row-1)->Add(ShopElements.at(columns-1), 1, wxEXPAND | wxALL, 5);
 	ShopElements.at(columns-1)->updateImage();
 	columns++;
 	try
@@ -176,14 +167,66 @@ void HomePagePanel::Init(sql::ResultSet* res, float col_columns)
 			if (columns > col_columns * row)
 			{
 				row += 1;
-				ShopPanels.push_back(new wxBoxSizer(wxHORIZONTAL));
-				DownPanelSizer->Add(ShopPanels.at(row-1), 1, wxEXPAND | wxALL);
 			}
-			ShopElements.push_back(new ShopElement(this, wxDefaultPosition, wxDefaultSize));
+			ShopElements.push_back(new ShopElement(ShopPanel.at(row - 1), wxDefaultPosition, wxDefaultSize));
 			ShopElements.at(columns-1)->updateData(res->getInt(1), res->getString(2), res->getString(3),
 											res->getString(4), res->getInt(5), res->getInt(6),
 											res->getInt(7), res->getString(8));
-			ShopPanels.at(row-1)->Add(ShopElements.at(columns-1), 1, wxEXPAND | wxALL);
+			ShopPanels.at(row-1)->Add(ShopElements.at(columns-1), 1, wxEXPAND | wxALL, 5);
+			ShopElements.at(columns-1)->updateImage();
+			columns++;
+			std::cout << "| --------------------------------------- |" << std::endl;
+			std::cout << "Id: " << res->getInt(1) << std::endl;
+			std::cout << "Articul: " << res->getString(2) << std::endl; 
+			std::cout << "Model: " << res->getString(3) << std::endl;
+			std::cout << "Provider: " << res->getString(4) << std::endl;
+			std::cout << "Price: " << res->getInt(5) << std::endl;
+			std::cout << "Warranty: " << res->getInt(6) << std::endl; 
+			std::cout << "Count: " << res->getInt(7) << std::endl;
+			std::cout << "PathToImage: " << res->getString(8) << std::endl;
+		}
+	}
+	catch(sql::SQLException &e)
+	{
+		std::cout << e.what() << std::endl;
+	}
+	col_column = col_columns;
+}
+
+void HomePagePanel::UpdateTable(sql::ResultSet* res)
+{
+	for (auto i : ShopPanels)
+	{
+		i->Clear();
+	}
+	for (auto i : ShopElements)
+	{
+		delete i;
+	}
+	ShopElements.clear();
+	int columns = 1;
+	int row = 1;
+	res->first();
+	ShopElements.push_back(new ShopElement(ShopPanel.at(0), wxDefaultPosition, wxDefaultSize));
+	ShopElements.at(columns-1)->updateData(res->getInt(1), res->getString(2), res->getString(3),
+											res->getString(4), res->getInt(5), res->getInt(6),
+											res->getInt(7), res->getString(8));
+	ShopPanels.at(row-1)->Add(ShopElements.at(columns-1), 1, wxEXPAND | wxALL, 5);
+	ShopElements.at(columns-1)->updateImage();
+	columns++;
+	try
+	{
+		while (res->next())
+		{
+			if (columns > col_column * row)
+			{
+				row += 1;
+			}
+			ShopElements.push_back(new ShopElement(ShopPanel.at(row - 1), wxDefaultPosition, wxDefaultSize));
+			ShopElements.at(columns-1)->updateData(res->getInt(1), res->getString(2), res->getString(3),
+											res->getString(4), res->getInt(5), res->getInt(6),
+											res->getInt(7), res->getString(8));
+			ShopPanels.at(row-1)->Add(ShopElements.at(columns-1), 1, wxEXPAND | wxALL, 5);
 			ShopElements.at(columns-1)->updateImage();
 			columns++;
 			std::cout << "| --------------------------------------- |" << std::endl;
@@ -208,7 +251,7 @@ void HomePagePanel::UpdateImage()
 	std::cout << "Update Image Size" << std::endl;
 	for (int i=0; i < ShopElements.size(); i++)
 	{
-		ShopElements.at(i)->DrawImage();
+		ShopElements.at(i)->updateImage();
 	}
 }
 

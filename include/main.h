@@ -27,6 +27,7 @@
 #include <wx/filepicker.h>
 #include <wx/filefn.h>
 #include <wx/numdlg.h>
+#include <wx/dcbuffer.h>
 //Подключение конектора MySQL C++
 #include <mysql_driver.h>
 #include <mysql_connection.h>
