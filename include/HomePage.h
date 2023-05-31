@@ -72,6 +72,33 @@ public:
 	void UpdateTable(sql::ResultSet* res);
 };
 
+class BasketElement : public wxPanel
+{
+protected:
+	wxBoxSizer* mainSizer;
+	wxBoxSizer* upSizer;
+	wxBoxSizer* downSizer;
+	wxBoxSizer* rightSizer;
+	wxPanel* imagePanel;
+	wxBoxSizer* imageSizer;
+	wxStaticBitmap* imageProduct;
+	wxStaticText* priceLabel;
+	wxStaticText* countLabel;
+	wxStaticText* nameLabel;
+	wxStaticText* priceLabelText;
+	wxStaticText* countLabelText;
+	wxButton* cancelButton;
+	wxImage* originalImage;
+	wxImage* image;
+	wxBitmap* bitmapImage;
+public:
+	BasketElement(wxWindow *parent, const wxPoint &pos, const wxSize &size);
+	void UpdateData(ShopElement *Element);
+	void UpdateImage();
+	~BasketElement();
+};
+
+
 class HomePageBasket : public wxPanel
 {
 protected:
@@ -80,12 +107,15 @@ protected:
 	wxBoxSizer* downSizer;
 	wxStaticText* namePage;
 	wxScrolledWindow* panelElement;
+	wxBoxSizer* panelSizer;
 	
 public:
 	wxButton* backButton;
 	wxButton* cancelButton;
 	HomePageBasket(wxWindow *parent, const wxPoint &pos, const wxSize &size);
+	void UpdateBasketElement(wxVector <wxString> *listShop, wxVector <ShopElement*> *ShopElements);
+	void UpdateImage();
+	wxVector <BasketElement*> listBasket;
 };
-
 
 #endif

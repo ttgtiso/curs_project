@@ -36,6 +36,7 @@ public:
     void UpdateData(ShopElement *Element);
     void UpdateImage();
     void UpdateImage(wxSize size);
+    ShopElement* CurrentElement;
 };
 
 #endif

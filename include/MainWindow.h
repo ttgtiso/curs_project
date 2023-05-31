@@ -41,14 +41,17 @@ class MyFrame1 : public wxFrame
 		void AddUser( wxCommandEvent& event );
 		void RemoveElement( wxCommandEvent& event );
 		void ShowBasketPage( wxCommandEvent& event );
+		void AddListBasket( wxCommandEvent& event );
 
 		/***************|     Дополнительные функции   |*********************/
 		void SetUser();
 		int LastId(wxGrid* grid);
 		void ShowTable(std::string nameTable); // Перегрузка ShowTable
+		void ConnectEventButtonsHomePage();
+		void DisconnectEventButtonsHomePage();
+		void UpdateHomePageTable();
 		void ConnectEventButtonsShopPage();
 		void DisconnectEventButtonsShopPage();
-		void UpdateShopPageTable();
 
 		/***************|      Переменные MySQL    |*********************/
 		sql::mysql::MySQL_Driver *driver;
@@ -63,13 +66,14 @@ class MyFrame1 : public wxFrame
 		int userPrivilege;
 		bool userLogining;
 		std::string currentTable;
+
+		wxVector <wxString> listShop;
 		
 	public:
 		HomePagePanel* HomePage;
 		virtual void OnSize(wxSizeEvent& event);
 		MyFrame1(const wxString &title, const wxPoint &pos, const wxSize &size);
 		~MyFrame1();
-
 };
 
 #endif

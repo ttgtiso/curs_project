@@ -22,6 +22,7 @@ MyFrame1::MyFrame1(const wxString &title, const wxPoint &pos, const wxSize &size
 	stmt = con->createStatement();
 	stmt->execute("USE autoshop");
 	userLogining = false;
+	listShop.reserve(50);
 
 	// Установка минимального размера окна
 	this->SetSizeHints( wxSize( 700,600 ), wxDefaultSize );
@@ -48,6 +49,7 @@ MyFrame1::MyFrame1(const wxString &title, const wxPoint &pos, const wxSize &size
 
 	ShopPage = new ShopPagePanel(SimpleBookMain, wxDefaultPosition, wxDefaultSize);
 	ShopPage->backButton->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::ViewBack), NULL, this);
+	ShopPage->buyButton->Connect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::AddListBasket), NULL, this);
 
 	RootPage = new RootPagePanel(SimpleBookMain, wxDefaultPosition, wxDefaultSize);
 	RootPage->reloginButton->Connect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::Relogin), NULL, this);
@@ -78,7 +80,7 @@ MyFrame1::MyFrame1(const wxString &title, const wxPoint &pos, const wxSize &size
 	SimpleBookMain->AddPage(RootPageAddUsr, wxT("Root page add user"));
 	SimpleBookMain->AddPage(HomeBasket, wxT("Home Page Basket"));
 
-	ConnectEventButtonsShopPage();
+	ConnectEventButtonsHomePage();
 }
 
 MyFrame1::~MyFrame1()
@@ -93,6 +95,7 @@ MyFrame1::~MyFrame1()
 	RegPage->LoginingButton->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::OnReged), NULL, this);
 	RegPage->backButton->Disconnect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::Back_main_window), NULL, this);
 	ShopPage->backButton->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::ViewBack), NULL, this);
+	ShopPage->buyButton->Disconnect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::AddListBasket), NULL, this);
 	RootPage->reloginButton->Disconnect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::Relogin), NULL, this);
 	RootPage->showTable->Disconnect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::ShowTable), NULL, this);
 	RootPage->addProduct->Disconnect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::ShowAddProduct), NULL, this);
@@ -170,11 +173,16 @@ void MyFrame1::OnSize(wxSizeEvent& event)
 		std::cout << "Root Page Update" << std::endl;
 		RootPage->UpdateImage();
 	}
+	if (HomeBasket->IsShown())
+	{
+		std::cout << "Update Basket Page" << std::endl;
+		HomeBasket->UpdateImage();
+	}
 	Refresh();
 	event.Skip();
 }
 
-void MyFrame1::ConnectEventButtonsShopPage()
+void MyFrame1::ConnectEventButtonsHomePage()
 {
 	for (int i=0; i < HomePage->ShopElements.size(); i++)
 	{
@@ -187,7 +195,7 @@ void MyFrame1::OnLogin(wxCommandEvent& event)
 	try
 	{
 		stmt = con->createStatement();
-		res = stmt->executeQuery("SELECT login,password,privilege_level from users");
+		res = stmt->executeQuery("SELECT login,password,privilege_level,list_shop from users");
 	}
 	catch(sql::SQLException &e)
 	{
@@ -218,12 +226,35 @@ void MyFrame1::OnLogin(wxCommandEvent& event)
 				userPrivilege = res->getInt(3);
 				userLogining = true;
 				SetUser();
+				break;
 			}
 		}
 	}
 	if (userLogining == false)
 	{
 		std::cout << "Задан не верный логин или пароль." << std::endl;
+	}
+	else
+	{
+		std::string s = res->getString(4).asStdString();
+		std::string delims = "|";
+		std::string::iterator begin = s.begin();
+    	std::string::iterator current = s.begin();
+		std::cout << s << std::endl; 
+		while (current != s.end())
+		{
+			while ((find(delims.begin(), delims.end(), *current) == delims.end()) && (current != s.end()))
+				++current;
+			listShop.push_back(wxString::FromUTF8(std::string(begin, current)));
+			if (current != s.end())
+			{
+				++current;
+				begin = current;
+			}
+		}
+			for (int i=0; i<listShop.size();i++){
+				std::cout << listShop[i] << std::endl;
+		}
 	}
 	delete stmt;
 	delete res;
@@ -315,7 +346,7 @@ void MyFrame1::AddProduct(wxCommandEvent& event)
 	RootPageAddPro->AddProduct(LastId(RootPageView->gridTable), prep_stmt, con);
 	RootPageAddPro->ClearPage();
 	SimpleBookMain->ChangeSelection(Root_page_id);
-	UpdateShopPageTable();
+	UpdateHomePageTable();
 }
 
 void MyFrame1::RemoveElement(wxCommandEvent& event)
@@ -340,7 +371,7 @@ void MyFrame1::RemoveElement(wxCommandEvent& event)
 		std::cout << e.what() << std::endl;
 	}
 	delete stmt;
-	UpdateShopPageTable();
+	UpdateHomePageTable();
 }
 
 int MyFrame1::LastId(wxGrid* grid)
@@ -383,26 +414,48 @@ void MyFrame1::AddUser(wxCommandEvent& event)
 
 void MyFrame1::ShowBasketPage(wxCommandEvent& event)
 {
-	//SimpleBookMain->ChangeSelection(Home_basket_id);
-	UpdateShopPageTable();
+	SimpleBookMain->ChangeSelection(Home_basket_id);
+	HomeBasket->UpdateBasketElement(&listShop, &HomePage->ShopElements);
+	HomeBasket->Layout();
 }
 
-void MyFrame1::UpdateShopPageTable()
+void MyFrame1::UpdateHomePageTable()
 {
-	DisconnectEventButtonsShopPage();
+	DisconnectEventButtonsHomePage();
 	stmt = con->createStatement();
 	res = stmt->executeQuery("SELECT * from product");
 	HomePage->UpdateTable(res);
 	delete res;
 	delete stmt;
-	ConnectEventButtonsShopPage();
+	ConnectEventButtonsHomePage();
 	HomePage->Layout();
 }
 
-void MyFrame1::DisconnectEventButtonsShopPage()
+void MyFrame1::DisconnectEventButtonsHomePage()
 {
 	for (int i=0; i < HomePage->ShopElements.size(); i++)
 	{
 		HomePage->ShopElements.at(i)->ViewButton->Disconnect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::ViewContent), NULL, this);
 	}
+}
+
+void MyFrame1::ConnectEventButtonsShopPage()
+{
+	for (auto i : HomeBasket->listBasket)
+	{
+		//i->cancelButton->Connect();
+	}
+}
+
+void MyFrame1::DisconnectEventButtonsShopPage()
+{
+	for (auto i : HomeBasket->listBasket)
+	{
+		//i->cancelButton->Disconnect();
+	}
+}
+
+void MyFrame1::AddListBasket(wxCommandEvent& event)
+{
+	listShop.push_back(ShopPage->CurrentElement->model);
 }

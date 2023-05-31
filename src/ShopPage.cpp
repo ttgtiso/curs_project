@@ -54,6 +54,7 @@ ShopPagePanel::ShopPagePanel(wxWindow *parent, const wxPoint &pos, const wxSize 
 void ShopPagePanel::UpdateData(ShopElement *Element)
 {
     delete originalImage;
+    CurrentElement = Element;
     originalImage = new wxImage(Element->PathToImage);
     idLabel->SetLabelText(wxT("ID товара: " + Element->id));
     articulLabel->SetLabelText(wxT("Артикул: " + Element->articul));

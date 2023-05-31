@@ -264,7 +264,9 @@ HomePageBasket::HomePageBasket(wxWindow *parent, const wxPoint &pos, const wxSiz
 	namePage = new wxStaticText(this, wxID_ANY, wxT("Корзина"));
 	cancelButton = new wxButton(this, wxID_ANY, wxT("Очистить корзину"));
 	panelElement = new wxScrolledWindow(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxVSCROLL);
-	
+	panelSizer = new wxBoxSizer(wxVERTICAL);
+	panelElement->SetSizer(panelSizer);
+	panelElement->SetScrollRate(10, 10);
 	upSizer->Add(backButton);
 	upSizer->Add(namePage);
 	
@@ -278,3 +280,106 @@ HomePageBasket::HomePageBasket(wxWindow *parent, const wxPoint &pos, const wxSiz
 	
 	this->SetSizer(mainSizer);
  }
+
+ BasketElement::BasketElement(wxWindow *parent, const wxPoint &pos, const wxSize &size)
+	: wxPanel(parent, wxID_ANY, pos, size, wxBORDER_THEME)
+{
+	mainSizer = new wxBoxSizer(wxVERTICAL);
+	upSizer = new wxBoxSizer(wxHORIZONTAL);
+	//downSizer = new wxBoxSizer(wxHORIZONTAL);
+
+	imagePanel = new wxPanel(this, wxID_ANY);
+	imageSizer = new wxBoxSizer(wxVERTICAL);
+	imagePanel->SetSizer(imageSizer);
+	imageProduct = new wxStaticBitmap(imagePanel, wxID_ANY, wxNullBitmap);
+	imageSizer->Add(imageProduct);
+	imageProduct->SetMinSize(wxSize(200, 200));
+	imageProduct->SetMaxSize(wxSize(300, 300));
+	priceLabel = new wxStaticText(this, wxID_ANY, wxT("Цена: "));
+	countLabel = new wxStaticText(this, wxID_ANY, wxT("Количество: "));
+
+	nameLabel = new wxStaticText(this, wxID_ANY, *wxEmptyString);
+	//priceLabelText = new wxStaticText(this, wxID_ANY, *wxEmptyString);
+	//countLabelText = new wxStaticText(this, wxID_ANY, *wxEmptyString);
+	cancelButton = new wxButton(this, wxID_ANY, wxT("Удалить"));
+
+	rightSizer = new wxBoxSizer(wxVERTICAL);
+	rightSizer->Add(nameLabel);
+	rightSizer->Add(priceLabel);
+	rightSizer->Add(countLabel);
+	rightSizer->Add(cancelButton);
+	originalImage = new wxImage();
+	upSizer->Add(imagePanel, 0, wxEXPAND | wxALL, 10);
+	upSizer->Add(rightSizer, 0, wxEXPAND | wxALL, 10);
+
+	//downSizer->Add(nameLabel, 1, wxEXPAND); 
+	//downSizer->Add(priceLabelText, 1, wxEXPAND);
+	//downSizer->Add(countLabelText, 1, wxEXPAND);
+	//downSizer->Add(cancelButton, 0);
+
+	mainSizer->Add(upSizer, 0, wxEXPAND);
+	//mainSizer->Add(downSizer, 0, wxEXPAND);
+	
+	SetSizerAndFit(mainSizer);
+}
+
+void BasketElement::UpdateData(ShopElement* Element)
+{
+	delete originalImage;
+	originalImage = new wxImage(Element->PathToImage);
+	nameLabel->SetLabel((wxT("Имя: ") + Element->model));
+	priceLabel->SetLabel((wxT("Цена: ") + Element->price));
+	countLabel->SetLabel((wxT("Количество: ") + Element->count));
+	UpdateImage();
+}
+
+void BasketElement::UpdateImage()
+{
+	image = new wxImage(originalImage->Scale(imagePanel->GetSize().x, imagePanel->GetSize().y));
+	bitmapImage = new wxBitmap(*image);
+	imageProduct->SetBitmap(*bitmapImage);
+	delete bitmapImage;
+	delete image;
+}
+
+BasketElement::~BasketElement()
+{
+	delete originalImage;
+}
+
+ void HomePageBasket::UpdateBasketElement(wxVector <wxString> *listShop, wxVector <ShopElement*> *ShopElements)
+ {
+	if (!(listBasket.empty()))
+	{
+		for (auto i : listBasket)
+		{
+			delete i;
+		}
+		listBasket.clear();
+		panelSizer->Clear(true);
+	}
+	if (listShop->empty())
+		return ;
+	for (int i = 0; i < listShop->size(); i++)
+	{
+		for (int j = 0; j < ShopElements->size(); j++)
+		{
+			if (listShop->at(i) == ShopElements->at(j)->model)
+			{
+				listBasket.push_back(new BasketElement(panelElement, wxDefaultPosition, wxDefaultSize));
+				listBasket.at(i)->UpdateData(ShopElements->at(j));
+				panelSizer->Add(listBasket.at(i), 0, wxEXPAND);
+				break;
+			}
+		}
+	}
+
+ }
+
+void HomePageBasket::UpdateImage()
+{
+	for (auto Element : listBasket)
+	{
+		Element->UpdateImage();
+	}
+}
