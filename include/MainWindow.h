@@ -4,6 +4,8 @@
 #include <HomePage.h>
 #include <LoginPage.h>
 #include <RegPage.h>
+#include <ShopPage.h>
+#include <RootPage.h>
 
 class MyFrame1 : public wxFrame
 {
@@ -12,19 +14,69 @@ class MyFrame1 : public wxFrame
 	protected:
 		/***************|      Корень окна       |*********************/
 		wxSimplebook* SimpleBookMain;
-		HomePagePanel* HomePage;
+		RootPagePanel* RootPage;
+		RootPageViewColumn* RootPageView;
+		RootPageAddProduct* RootPageAddPro;
+		RootPageAddUser* RootPageAddUsr;
 		LoginPagePanel* LoginPage;
 		RegPagePanel* RegPage;
+		ShopPagePanel* ShopPage;
+		HomePageBasket* HomeBasket;
 
 		/***************|    События приложения   |*********************/
-		virtual void OnLogin( wxCommandEvent& event );
-		virtual void OnReged( wxCommandEvent& event );
+		virtual void ShownLoginPage( wxCommandEvent& event );
+		virtual void ShownRegedPage( wxCommandEvent& event );
 		virtual void Back_main_window( wxCommandEvent& event ); 
+		virtual void ViewContent( wxCommandEvent& event );
+		virtual void ViewBack( wxCommandEvent& event );
+		void OnLogin( wxCommandEvent& event );
+		void OnReged( wxCommandEvent& event );
+		void Relogin( wxCommandEvent& event );
+		void ShowTable( wxCommandEvent& event ); // Перегрузка ShowTable
+		void ShowAddProduct( wxCommandEvent& event );
+		void ShowAddUser( wxCommandEvent& event );
+		void BackRoot( wxCommandEvent& event );
+		void PictureImage( wxFileDirPickerEvent& event );
+		void AddProduct( wxCommandEvent& event );
+		void AddUser( wxCommandEvent& event );
+		void RemoveElement( wxCommandEvent& event );
+		void ShowBasketPage( wxCommandEvent& event );
+		void AddListBasket( wxCommandEvent& event );
+		void RemoveListBasket( wxCommandEvent& event );
+		void FullRemoveListBasket( wxCommandEvent& event );
 
+		/***************|     Дополнительные функции   |*********************/
+		void SetUser();
+		int LastId(wxGrid* grid);
+		void ShowTable(std::string nameTable); // Перегрузка ShowTable
+		void ConnectEventButtonsHomePage();
+		void DisconnectEventButtonsHomePage();
+		void UpdateHomePageTable();
+		void ConnectEventButtonsShopPage();
+		void DisconnectEventButtonsShopPage();
+		void UpdateShopPage();
 
+		/***************|      Переменные MySQL    |*********************/
+		sql::mysql::MySQL_Driver *driver;
+		sql::Connection *con;
+		sql::Statement *stmt; // Данный тип поддерживает только простые SQL запросы
+		sql::PreparedStatement *prep_stmt;
+		sql::ResultSet *res;
+		sql::ResultSetMetaData* data;
+
+		/***************|    Настройки текующего пользователя   |*********************/
+		wxString userName;
+		int userPrivilege;
+		bool userLogining;
+		std::string currentTable;
+
+		wxVector <wxString> listShop;
+		
 	public:
+		HomePagePanel* HomePage;
+		virtual void OnSize(wxSizeEvent& event);
 		MyFrame1(const wxString &title, const wxPoint &pos, const wxSize &size);
 		~MyFrame1();
-
 };
+
 #endif

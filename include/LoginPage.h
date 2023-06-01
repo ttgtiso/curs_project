@@ -8,18 +8,20 @@ private:
 
 protected:
 	/***************| Элемнты страницы авторизации |*********************/
+    wxBoxSizer* mainSizer;
 	wxStaticBox* LoginPanel;
 	wxStaticBoxSizer* LoginPanelSizer;
 
 	wxBoxSizer* LoginBoxSizerHorizontal;
 	wxBoxSizer* LoginBoxSizerVertical;
     wxStaticText* LoginLabel;
-    wxTextCtrl* LoginEdit;
     wxStaticText* PasswordLabel;
-    wxTextCtrl* PasswordEdit;
 
 public:
+    wxTextCtrl* LoginEdit;
     wxButton* LoginingButton;
+    wxTextCtrl* PasswordEdit;
+    wxButton* backButton;
     LoginPagePanel(wxWindow *parent, const wxPoint &pos, const wxSize &size);
 };
 

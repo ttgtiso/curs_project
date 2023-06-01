@@ -21,6 +21,14 @@
 #include <wx/simplebook.h>
 #include <wx/scrolwin.h>
 #include <wx/frame.h>
+#include <wx/animate.h>
+#include <wx/vector.h>
+#include <wx/grid.h>
+#include <wx/filepicker.h>
+#include <wx/filefn.h>
+#include <wx/numdlg.h>
+#include <wx/dcbuffer.h>
+#include <wx/msgdlg.h>
 //Подключение конектора MySQL C++
 #include <mysql_driver.h>
 #include <mysql_connection.h>
@@ -28,6 +36,12 @@
 #include <cppconn/connection.h>
 #include <cppconn/statement.h>
 #include <cppconn/exception.h>
+#include <cppconn/prepared_statement.h>
+
+#include <math.h>
+#include <vector>
+#include <string>
+#include <algorithm>
 
 class MyApp : public wxApp
 {

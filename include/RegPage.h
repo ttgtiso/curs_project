@@ -8,6 +8,7 @@ private:
 
 protected:
 	/***************| Элемнты страницы авторизации |*********************/
+	wxBoxSizer* mainSizer;
 	wxStaticBox* LoginPanel;
 	wxStaticBoxSizer* LoginPanelSizer;
 
@@ -27,7 +28,10 @@ protected:
 
 public:
     wxButton* LoginingButton;
+	wxButton* backButton;
     RegPagePanel(wxWindow *parent, const wxPoint &pos, const wxSize &size);
+	void AddUser(int id, sql::PreparedStatement *prep_stmt, sql::Connection *con);
+	void ClearPage();
 };
 
 #endif

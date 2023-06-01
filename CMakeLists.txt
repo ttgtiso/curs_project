@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.18.4)
-project(Curs_project VERSION 0.1.0)
+project(Curs_project VERSION 0.6.5)
 
 if (UNIX)
 	find_package(wxWidgets REQUIRED COMPONENTS net core base)
@@ -12,8 +12,6 @@ if (UNIX)
 	    src/*
 	)
 
-	#file (GLOB project_LIB_MYSQL 
-	#    lib/linux/mariadb/*) - забыть как страшный сон
 	set(CXX_FLAGS "-lmysql"
 					"-lmysqlcppconn"
 					"-lmysqlclient-r")
@@ -44,7 +42,7 @@ if (WIN32)
 	file(GLOB MYSQL_INCLUDE_DIR "C:/mysql-connector/include/jdbc")
 	file(GLOB MYSQL_LIB_DIR "C:/mysql-connector/lib64/vs14/*")
 
-	add_executable(Curs_project ${project_GLOB})
+	add_executable(Curs_project WIN32 ${project_GLOB})
 	target_link_libraries(Curs_project ${wxWidgets_LIBRARIES}
 										${MYSQL_LIB_DIR})
 	target_include_directories(Curs_project PRIVATE ${wxWidgets_INCLUDE_DIRS}
