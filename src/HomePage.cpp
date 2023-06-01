@@ -327,6 +327,7 @@ void BasketElement::UpdateData(ShopElement* Element)
 {
 	delete originalImage;
 	originalImage = new wxImage(Element->PathToImage);
+	nameElement = Element->model;
 	nameLabel->SetLabel((wxT("Имя: ") + Element->model));
 	priceLabel->SetLabel((wxT("Цена: ") + Element->price));
 	countLabel->SetLabel((wxT("Количество: ") + Element->count));

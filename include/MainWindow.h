@@ -42,6 +42,8 @@ class MyFrame1 : public wxFrame
 		void RemoveElement( wxCommandEvent& event );
 		void ShowBasketPage( wxCommandEvent& event );
 		void AddListBasket( wxCommandEvent& event );
+		void RemoveListBasket( wxCommandEvent& event );
+		void FullRemoveListBasket( wxCommandEvent& event );
 
 		/***************|     Дополнительные функции   |*********************/
 		void SetUser();
@@ -52,6 +54,7 @@ class MyFrame1 : public wxFrame
 		void UpdateHomePageTable();
 		void ConnectEventButtonsShopPage();
 		void DisconnectEventButtonsShopPage();
+		void UpdateShopPage();
 
 		/***************|      Переменные MySQL    |*********************/
 		sql::mysql::MySQL_Driver *driver;

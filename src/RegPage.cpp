@@ -48,3 +48,47 @@ RegPagePanel::RegPagePanel(wxWindow *parent, const wxPoint &pos, const wxSize &s
 
     this->SetSizerAndFit(mainSizer);
 }
+
+void RegPagePanel::AddUser(int id, sql::PreparedStatement *prep_stmt, sql::Connection *con)
+{
+    std::string string1 = UserNameEdit->GetValue().ToStdString();
+    std::string string2 = UserPhoneEdit->GetValue().ToStdString();
+    std::string string3 = LoginEdit->GetValue().ToStdString();
+    std::string string4 = PasswordEdit->GetValue().ToStdString();
+    std::string string5 = ConfirmPasswordEdit->GetValue().ToStdString();
+
+    if (string4 != string5)
+    {
+        wxMessageBox(wxT("Неверно потверждён пароль."), wxT("Ошибка"), wxICON_ERROR);
+        return ;
+    }
+    try
+    {
+		std::cout << "Выполнение подключения к базе данных..." << std::endl;
+		prep_stmt = con->prepareStatement("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+		prep_stmt->setInt(1, id);
+		prep_stmt->setString(2, string3);
+		prep_stmt->setString(3, string4);
+		prep_stmt->setInt(4, 0);
+		prep_stmt->setString(5, string2);
+		prep_stmt->setString(6, string1);
+		prep_stmt->setInt(7, 0);
+        prep_stmt->setString(8, "");
+		prep_stmt->execute();
+		std::cout << "Выполнение запроса завершено" << std::endl;
+		delete prep_stmt;
+	} 
+	catch(sql::SQLException &e)
+	{
+		std::cout << e.what() << std::endl;
+	}
+}
+
+void RegPagePanel::ClearPage()
+{
+    UserNameEdit->SetValue(*wxEmptyString);
+    UserPhoneEdit->SetValue(*wxEmptyString);
+    LoginEdit->SetValue(*wxEmptyString);
+    PasswordEdit->SetValue(*wxEmptyString);
+    ConfirmPasswordEdit->SetValue(*wxEmptyString);
+}

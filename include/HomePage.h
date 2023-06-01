@@ -87,15 +87,16 @@ protected:
 	wxStaticText* nameLabel;
 	wxStaticText* priceLabelText;
 	wxStaticText* countLabelText;
-	wxButton* cancelButton;
 	wxImage* originalImage;
 	wxImage* image;
 	wxBitmap* bitmapImage;
 public:
+	wxButton* cancelButton;
 	BasketElement(wxWindow *parent, const wxPoint &pos, const wxSize &size);
 	void UpdateData(ShopElement *Element);
 	void UpdateImage();
 	~BasketElement();
+	wxString nameElement;
 };
 
 

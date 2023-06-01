@@ -34,6 +34,7 @@ MyFrame1::MyFrame1(const wxString &title, const wxPoint &pos, const wxSize &size
 
 	HomeBasket = new HomePageBasket(SimpleBookMain, wxDefaultPosition, wxDefaultSize);
 	HomeBasket->backButton->Connect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::Back_main_window), NULL, this);
+	HomeBasket->cancelButton->Connect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::FullRemoveListBasket), NULL, this);
 
 	res = stmt->executeQuery("SELECT * from product");
 	HomePage->Init(res, 4);
@@ -90,6 +91,7 @@ MyFrame1::~MyFrame1()
 	HomePage->RegButton->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame1::ShownRegedPage ), NULL, this);
 	HomePage->BasketButton->Disconnect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::ShowBasketPage), NULL ,this);
 	HomeBasket->backButton->Disconnect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::Back_main_window), NULL, this);
+	HomeBasket->cancelButton->Disconnect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::FullRemoveListBasket), NULL, this);
 	LoginPage->LoginingButton->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::OnLogin), NULL, this);
 	LoginPage->backButton->Disconnect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::Back_main_window), NULL, this);
 	RegPage->LoginingButton->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame1::OnReged), NULL, this);
@@ -236,24 +238,32 @@ void MyFrame1::OnLogin(wxCommandEvent& event)
 	}
 	else
 	{
-		std::string s = res->getString(4).asStdString();
-		std::string delims = "|";
-		std::string::iterator begin = s.begin();
-    	std::string::iterator current = s.begin();
-		std::cout << s << std::endl; 
-		while (current != s.end())
+		try
 		{
-			while ((find(delims.begin(), delims.end(), *current) == delims.end()) && (current != s.end()))
-				++current;
-			listShop.push_back(wxString::FromUTF8(std::string(begin, current)));
-			if (current != s.end())
+			listShop.clear();
+			std::string s = res->getString(4).asStdString();
+			std::string delims = "|";
+			std::string::iterator begin = s.begin();
+			std::string::iterator current = s.begin();
+			std::cout << s << std::endl; 
+			while (current != s.end())
 			{
-				++current;
-				begin = current;
+				while ((find(delims.begin(), delims.end(), *current) == delims.end()) && (current != s.end()))
+					++current;
+				listShop.push_back(wxString::FromUTF8(std::string(begin, current)));
+				if (current != s.end())
+				{
+					++current;
+					begin = current;
+				}
+			}
+				for (int i=0; i<listShop.size();i++){
+					std::cout << listShop[i] << std::endl;
 			}
 		}
-			for (int i=0; i<listShop.size();i++){
-				std::cout << listShop[i] << std::endl;
+		catch(sql::SQLException &e)
+		{
+			std::cout << e.what() << std::endl;
 		}
 	}
 	delete stmt;
@@ -262,7 +272,10 @@ void MyFrame1::OnLogin(wxCommandEvent& event)
 
 void MyFrame1::OnReged(wxCommandEvent& event)
 {
-	
+	ShowTable("users");
+	RegPage->AddUser(LastId(RootPageView->gridTable), prep_stmt, con);
+	RegPage->ClearPage();
+	SimpleBookMain->ChangeSelection(Home_page_id);
 }
 
 void MyFrame1::SetUser()
@@ -415,8 +428,7 @@ void MyFrame1::AddUser(wxCommandEvent& event)
 void MyFrame1::ShowBasketPage(wxCommandEvent& event)
 {
 	SimpleBookMain->ChangeSelection(Home_basket_id);
-	HomeBasket->UpdateBasketElement(&listShop, &HomePage->ShopElements);
-	HomeBasket->Layout();
+	UpdateShopPage();
 }
 
 void MyFrame1::UpdateHomePageTable()
@@ -443,7 +455,7 @@ void MyFrame1::ConnectEventButtonsShopPage()
 {
 	for (auto i : HomeBasket->listBasket)
 	{
-		//i->cancelButton->Connect();
+		i->cancelButton->Connect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::RemoveListBasket), NULL, this);
 	}
 }
 
@@ -451,11 +463,44 @@ void MyFrame1::DisconnectEventButtonsShopPage()
 {
 	for (auto i : HomeBasket->listBasket)
 	{
-		//i->cancelButton->Disconnect();
+		i->cancelButton->Disconnect(wxEVT_BUTTON, wxCommandEventHandler(MyFrame1::RemoveListBasket), NULL, this);
 	}
 }
 
 void MyFrame1::AddListBasket(wxCommandEvent& event)
 {
 	listShop.push_back(ShopPage->CurrentElement->model);
+}
+
+void MyFrame1::RemoveListBasket(wxCommandEvent& event)
+{
+	std::cout << "Remove element listBasket" << std::endl;
+	for (auto Element : HomeBasket->listBasket)
+	{
+		if (Element->cancelButton->GetId() == event.GetId())
+		{
+
+			std::cout << event.GetId() << std::endl;
+			std::cout << "Button found!"<< std::endl;
+			auto it = std::find(listShop.begin(), listShop.end(), Element->nameElement);
+			if (it != listShop.end())
+				listShop.erase(it);
+			UpdateShopPage();
+			break;
+		}
+	}
+}
+
+void MyFrame1::UpdateShopPage()
+{
+	DisconnectEventButtonsShopPage();
+	HomeBasket->UpdateBasketElement(&listShop, &HomePage->ShopElements);
+	ConnectEventButtonsShopPage();
+	HomeBasket->Layout();
+}
+
+void MyFrame1::FullRemoveListBasket(wxCommandEvent& event)
+{
+	listShop.clear();
+	UpdateShopPage();
 }
